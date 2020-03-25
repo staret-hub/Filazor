@@ -1,0 +1,44 @@
+﻿@page "/fileexplorer"
+
+@using Filazor.Core.Data
+@inject FileSystemService FSService
+
+<h6>File Explorer</h6>
+
+@if (driveInfos == null)
+{
+    <p><em>Can not get Drive Info...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>VolumeLabel</th>
+                <th>TotalSize</th>
+                <th>AvailableFreeSpace</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var driveInfo in driveInfos)
+            {
+                <tr>
+                    <td>@driveInfo.Name</td>
+                    <td>@driveInfo.VolumeLabel</td>
+                    <td>@driveInfo.TotalSize</td>
+                    <td>@driveInfo.AvailableFreeSpace</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private System.IO.DriveInfo[] driveInfos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        driveInfos = await FSService.GetDriveListAsync();
+    }
+}
