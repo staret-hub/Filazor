@@ -17,5 +17,15 @@ namespace Filazor.Core.Data
                 return driveInfos;
             });
         }
+
+        public Task<DirectoryInfo[]> GetDirectoryInfos(string path)
+        {
+            return Task.Run(() =>
+            {
+                var dirInfo = new DirectoryInfo(path);
+
+                return dirInfo.GetDirectories();
+            });
+        }
     }
 }

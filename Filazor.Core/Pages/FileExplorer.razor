@@ -3,6 +3,49 @@
 @using Filazor.Core.Data
 @inject FileSystemService FSService
 
+<style>
+    /* Remove default bullets */
+    ul, #fileTree {
+        list-style-type: none;
+    }
+
+    /* Remove margins and padding from the parent ul */
+    #fileTree {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .caret {
+        cursor: pointer;
+        user-select: none; /* Prevent text selection */
+    }
+
+    /* Create the caret/arrow with a unicode, and style it */
+    .caret::before {
+        content: "\276F";
+        color: lightgray;
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+        transform: rotate(90deg);
+        color: dodgerblue;
+    }
+
+    /* Hide the nested list */
+    .nested {
+        display: none;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+        display: block;
+    }
+</style>
+
 <h6>File Explorer</h6>
 
 @if (driveInfos == null)
@@ -11,34 +54,104 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>VolumeLabel</th>
-                <th>TotalSize</th>
-                <th>AvailableFreeSpace</th>
-            </tr>
-        </thead>
-        <tbody>
+    @*<table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>VolumeLabel</th>
+                    <th>TotalSize</th>
+                    <th>AvailableFreeSpace</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var driveInfo in driveInfos)
+                {
+                    <tr>
+                        <td>@driveInfo.Name</td>
+                        <td>@driveInfo.VolumeLabel</td>
+                        <td>@driveInfo.TotalSize</td>
+                        <td>@driveInfo.AvailableFreeSpace</td>
+                    </tr>
+                }
+            </tbody>
+        </table>*@
+
+    <ul id="fileTree">
+        <li>
             @foreach (var driveInfo in driveInfos)
             {
-                <tr>
-                    <td>@driveInfo.Name</td>
-                    <td>@driveInfo.VolumeLabel</td>
-                    <td>@driveInfo.TotalSize</td>
-                    <td>@driveInfo.AvailableFreeSpace</td>
-                </tr>
+                <span class="caret @caretDirection" @onclick="ExpandDrive">@driveInfo.VolumeLabel (@driveInfo.Name)</span>
+                <ul class="nested @show">
+                    @foreach (var dirInfo in directoryInfos)
+                    {
+                        <li>@dirInfo.Name</li>
+                    }
+                </ul>
             }
-        </tbody>
-    </table>
+
+            @*
+            <span class="caret @caretDirection" @onclick="ExpandTree">Beverages</span>
+            <ul class="nested @show">
+            <li>Water</li>
+            <li>Coffee</li>
+            <li>
+                <span class="caret">Tea</span>
+                <ul class="nested">
+                    <li>Black Tea</li>
+                    <li>White Tea</li>
+                    <li>
+                        <span class="caret">Green Tea</span>
+                        <ul class="nested">
+                            <li>Sencha</li>
+                            <li>Gyokuro</li>
+                            <li>Matcha</li>
+                            <li>Pi Lo Chun</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            </ul>*@
+        </li>
+    </ul>
 }
 
 @code {
     private System.IO.DriveInfo[] driveInfos;
+    private System.IO.DirectoryInfo[] directoryInfos;
+
+    private string show;
+    private string caretDirection;
+
 
     protected override async Task OnInitializedAsync()
     {
         driveInfos = await FSService.GetDriveListAsync();
+
+        if (driveInfos.Length > 0)
+        {
+            directoryInfos = await FSService.GetDirectoryInfos(driveInfos[0].Name);
+        }
+    }
+
+    private void ExpandDrive()
+    {
+        if (string.IsNullOrEmpty(show))
+        {
+            show = "active";
+        }
+        else
+        {
+            show = null;
+        }
+
+        if (string.IsNullOrEmpty(caretDirection))
+        {
+            caretDirection = "caret-down";
+        }
+        else
+        {
+            caretDirection = null;
+        }
     }
 }
+
