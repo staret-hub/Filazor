@@ -1,3 +1,12 @@
 ﻿@page "/"
+@inject NavigationManager Navigation
+@*<NavLink href="main">File Explorer</NavLink>*@
 
-<NavLink href="fileexplorer">File Explorer</NavLink>
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        Navigation.NavigateTo("main");
+    }
+
+}
