@@ -37,15 +37,20 @@
     .active {
         display: block;
     }
+
 </style>
 
 <span class="drive-caret @caretDirection" @onclick="ExpandDrive">
+    <span class="oi oi-hard-drive"></span>
     @RootInfo.VolumeLabel (@RootInfo.Name)
 </span>
 <ul class="nested @showChild">
-    @foreach (var dirInfo in ChildDirInfos) 
+    @foreach (var dirInfo in ChildDirInfos)
     {
-        <li>@dirInfo.Name</li>
+        <li>
+            <span class="oi oi-folder"></span>
+            @dirInfo.Name
+        </li>
     }
 </ul>
 

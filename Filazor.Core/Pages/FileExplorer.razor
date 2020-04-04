@@ -1,7 +1,7 @@
 ﻿@page "/main"
 
 @using Filazor.Core.Data
- 
+
 @inject FileSystemService FSService
 
 
@@ -18,66 +18,48 @@
     }
 </style>
 
-
 @if (driveInfos == null)
 {
-    <p><em>Can not get Drive Info...</em></p>
+    <p><em>Can not find drive in this device..</em></p>
 }
 else
 {
-    <ul id="FSTreeView">
-        @foreach (var driveInfo in driveInfos)
-        {
-            <li>
-                <Filazor.Core.Pages.Controls.DriveTreeNode RootInfo="@driveInfo" ChildDirInfos="@dirInfoDic[@driveInfo.Name]" />
-            </li>
-        }
-    </ul>
-}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <Filazor.Core.Pages.Controls.FileNavigationBar />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
 
-@*<ul id="fileTree">
-        <li>
-
-            @foreach (var driveInfo in driveInfos)
-            {
-                <span class="caret @caretDirection" @onclick="ExpandDrive">@driveInfo.VolumeLabel (@driveInfo.Name)</span>
-                <ul class="nested @show">
-                    @foreach (var dirInfo in directoryInfos)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <ul id="FSTreeView">
+                    @foreach (var driveInfo in driveInfos)
                     {
-                        <li>@dirInfo.Name</li>
+                        <li>
+                            <Filazor.Core.Pages.Controls.DriveTreeNode RootInfo="@driveInfo" ChildDirInfos="@dirInfoDic[@driveInfo.Name]" />
+                        </li>
                     }
                 </ul>
-            }
+            </div>
+            <div class="col">
+                File ListView
+            </div>
+        </div>
+    </div>
+}
 
-
-            <span class="caret @caretDirection" @onclick="ExpandTree">Beverages</span>
-            <ul class="nested @show">
-            <li>Water</li>
-            <li>Coffee</li>
-            <li>
-                <span class="caret">Tea</span>
-                <ul class="nested">
-                    <li>Black Tea</li>
-                    <li>White Tea</li>
-                    <li>
-                        <span class="caret">Green Tea</span>
-                        <ul class="nested">
-                            <li>Sencha</li>
-                            <li>Gyokuro</li>
-                            <li>Matcha</li>
-                            <li>Pi Lo Chun</li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            </ul>
-        </li>
-    </ul>*@
 
 @code {
 
     private System.IO.DriveInfo[] driveInfos;
     private Dictionary<string, System.IO.DirectoryInfo[]> dirInfoDic = new Dictionary<string, System.IO.DirectoryInfo[]>();
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,6 +73,13 @@ else
                 dirInfoDic.Add(driveInfo.Name, dirInfo);
             }
         }
+    }
+
+    private async void Test()
+    {
+
+
+        await InvokeAsync(async () => { this.StateHasChanged(); });
     }
 
 }
