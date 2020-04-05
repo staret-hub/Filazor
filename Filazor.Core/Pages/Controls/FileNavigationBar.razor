@@ -1,36 +1,50 @@
-﻿<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="btn-group mr-2" role="group" aria-label="First group">
-        <button type="button" class="btn btn-light">
-            <span class="oi oi-arrow-left"></span>
-        </button>
-        <button type="button" class="btn btn-light">
-            <span class="oi oi-arrow-right"></span>
-        </button>
-        <button type="button" class="btn btn-light">
-            <span class="oi oi-arrow-top"></span>
-        </button>
-    </div>
+﻿<div class="btn-toolbar py-1" role="toolbar">
 
-    <div class="input-group">
-        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    <button type="button" class="btn btn-light btn-sm mr-1">
+        <i class="material-icons align-middle">
+            arrow_back
+        </i>
+    </button>
+    <button type="button" class="btn btn-light btn-sm mr-1">
+        <i class="material-icons align-middle">
+            arrow_forward
+        </i>
+    </button>
+    @*<button type="button" class="btn btn-light btn-sm mr-1">
+            <i class="material-icons align-middle">
+                expand_more
+            </i>
+        </button>*@
+    <button type="button" class="btn btn-light btn-sm mr-1">
+        <i class="material-icons align-middle">
+            arrow_upward
+        </i>
+    </button>
+
+    <div class="input-group mr-3" style="width: 50%">
+        <input type="text" class="form-control" id="fullPath" />
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-outline-secondary" type="button" id="refresh">
+                <i class="material-icons align-middle">
+                    refresh
+                </i>
             </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">C:\</a>
-                <a class="dropdown-item" href="#">C:\Windows</a>
-                <a class="dropdown-item" href="#">C:\Temp</a>
-            </div>
         </div>
-        <button type="button" class="btn btn-light">
-            <span class="oi oi-reload"></span>
-        </button>
     </div>
 
-    <div class="input-group">
-        <input type="text" class="form-control" aria-label="Search">
+    <div class="input-group" style="width: 30%">
+        <input type="text" class="form-control" placeholder="Search" id="searchKeyword" />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="search">
+                <i class="material-icons align-middle">
+                    search
+                </i>
+            </button>
+        </div>
     </div>
+
 </div>
+
 
 @code {
 
