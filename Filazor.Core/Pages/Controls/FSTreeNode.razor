@@ -1,0 +1,90 @@
+﻿@using Filazor.Core.Data
+
+@inject FileSystemService FSService
+
+
+@if (IsDrive == true)
+{
+    @if (childDirectoryDic.Count > 0)
+    {
+        <span class="caret @caretDirection" @onclick="ExpandDirectory">
+            <small>@DriveVolumeLabel (@TargetRootDirectoryInfo.Name)</small>
+        </span>
+
+        <ul class="nested @showChild">
+            @foreach (var dirInfo in childDirectoryDic)
+            {
+                <li>
+                    <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <small>@DriveVolumeLabel (@TargetRootDirectoryInfo.Name)</small>
+    }
+}
+else
+{
+    @if (childDirectoryDic.Count > 0)
+    {
+        <span class="caret @caretDirection" @onclick="ExpandDirectory">
+            <small>@TargetRootDirectoryInfo.Name</small>
+        </span>
+
+        <ul class="nested @showChild">
+            @foreach (var dirInfo in childDirectoryDic)
+            {
+                <li>
+                    <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <small>@TargetRootDirectoryInfo.Name</small>
+    }
+}
+
+
+@code {
+
+    private string showChild;
+    private string caretDirection;
+
+    private Dictionary<string, System.IO.DirectoryInfo> childDirectoryDic = new Dictionary<string, System.IO.DirectoryInfo>();
+
+    [Parameter]
+    public bool IsDrive { get; set; }
+
+    [Parameter]
+    public string DriveVolumeLabel { get; set; }
+
+    [Parameter]
+    public System.IO.DirectoryInfo TargetRootDirectoryInfo { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var dirInfos = await FSService.GetDirectoryInfos(TargetRootDirectoryInfo.FullName);
+            foreach (var dirInfo in dirInfos)
+            {
+                childDirectoryDic.Add(dirInfo.Name, dirInfo);
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+
+        }
+    }
+
+    private void ExpandDirectory()
+    {
+        caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
+        showChild = string.IsNullOrEmpty(showChild) ? "active" : "";
+    }
+}

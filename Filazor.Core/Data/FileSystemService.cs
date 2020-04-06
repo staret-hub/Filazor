@@ -8,12 +8,20 @@ namespace Filazor.Core.Data
 {
     public class FileSystemService
     {
+        public Task<string> GetHostName()
+        {
+            return Task.Run(() =>
+            {
+                return Environment.MachineName;
+            });
+        }
+
         public Task<DriveInfo[]> GetDriveListAsync()
         {
             return Task.Run(() =>
             {
                 DriveInfo[] driveInfos = DriveInfo.GetDrives();
-
+               
                 return driveInfos;
             });
         }

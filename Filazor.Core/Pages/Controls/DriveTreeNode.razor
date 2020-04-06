@@ -3,10 +3,6 @@
 @inject FileSystemService FSService
 
 <style>
-    /* Remove default bullets */
-    ul {
-        list-style-type: none;
-    }
 
     /* Style the caret/arrow */
     .drive-caret {
@@ -37,22 +33,25 @@
     .active {
         display: block;
     }
-
 </style>
 
 <span class="drive-caret @caretDirection" @onclick="ExpandDrive">
     <span class="oi oi-hard-drive"></span>
     @RootInfo.VolumeLabel (@RootInfo.Name)
 </span>
-<ul class="nested @showChild">
-    @foreach (var dirInfo in ChildDirInfos)
-    {
-        <li>
-            <span class="oi oi-folder"></span>
-            @dirInfo.Name
-        </li>
-    }
-</ul>
+
+@if (ChildDirInfos != null)
+{
+    <ul class="nested @showChild">
+        @foreach (var dirInfo in ChildDirInfos)
+        {
+            <li>
+                <span class="oi oi-folder"></span>
+                @dirInfo.Name
+            </li>
+        }
+    </ul>
+}
 
 @code {
 

@@ -11,10 +11,48 @@
         list-style-type: none;
     }
 
+    ul {
+        padding-left: 25px;
+    }
+
     /* Remove margins and padding from the parent ul */
     #FSTreeView {
         margin: 0;
         padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .caret {
+        cursor: pointer;
+        user-select: none; /* Prevent text selection */
+    }
+
+    /* Create the caret/arrow with a unicode, and style it */
+    .caret::before {
+        content: "\276F";
+        color: darkgray;
+        display: inline-block;
+        margin-right: 3px;
+    }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+        transform: rotate(90deg);
+        color: black;
+    }
+
+    /* Hide the nested list */
+    .nested {
+        display: none;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+        display: block;
+    }
+
+    .item-selected {
+        background-color: aliceblue;
     }
 
     .row > div {
@@ -22,9 +60,9 @@
     }
 </style>
 
-@if (driveInfos == null)
+@if (string.IsNullOrEmpty(hostName))
 {
-    <p><em>Can not find drive in this device..</em></p>
+    <p><em>Can not find host..</em></p>
 }
 else
 {
@@ -44,18 +82,25 @@ else
         <div class="row" style="height: 600px;">
             <div class="col-4 px-2 py-2">
                 <ul id="FSTreeView">
-                    <li>
-                        <i class="material-icons align-middle">
-                            computer
-                        </i>
-                        Computer Name
+                    <li class="@selectedList">
+                        <span class="caret ml-2 @caretDirection" @onclick="OnClickHostItem">
+                            <i class="material-icons align-middle" style="color: dimgrey">
+                                computer
+                            </i>
+                            <small>@hostName</small>
+                        </span>
+                        @if (driveInfos != null)
+                        {
+                            <ul class="nested @showDrives">
+                            @foreach (var driveInfo in driveInfos)
+                            {
+                                <li>
+                                    <Filazor.Core.Pages.Controls.FSTreeNode IsDrive=true DriveVolumeLabel=@driveInfo.VolumeLabel TargetRootDirectoryInfo=@driveInfo.RootDirectory />
+                                </li>
+                            }
+                            </ul>
+                        }
                     </li>
-                    @*@foreach (var driveInfo in driveInfos)
-                    {
-                        <li>
-                            <Filazor.Core.Pages.Controls.DriveTreeNode RootInfo="@driveInfo" ChildDirInfos="@dirInfoDic[@driveInfo.Name]" />
-                        </li>
-                    }*@
                 </ul>
             </div>
             <div class="col-8 px-1">
@@ -67,32 +112,28 @@ else
 
 
 @code {
-
+    private string hostName;
     private System.IO.DriveInfo[] driveInfos;
-    private Dictionary<string, System.IO.DirectoryInfo[]> dirInfoDic = new Dictionary<string, System.IO.DirectoryInfo[]>();
 
+    private string caretDirection;
+    private string selectedList;
+    private string showDrives;
 
 
     protected override async Task OnInitializedAsync()
     {
-        driveInfos = await FSService.GetDriveListAsync();
-
-        foreach (var driveInfo in driveInfos)
-        {
-            var dirInfo = await FSService.GetDirectoryInfos(driveInfo.Name);
-            if (dirInfo != null && dirInfo.Length > 0)
-            {
-                dirInfoDic.Add(driveInfo.Name, dirInfo);
-            }
-        }
+        hostName = await FSService.GetHostName();
     }
 
-    private async void Test()
+    private async void OnClickHostItem()
     {
+        driveInfos = await FSService.GetDriveListAsync();
 
+        caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
+        showDrives = string.IsNullOrEmpty(showDrives) ? "active" : "";
+        selectedList = string.IsNullOrEmpty(selectedList) ? "item-selected" : "";
 
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
-
 }
 
