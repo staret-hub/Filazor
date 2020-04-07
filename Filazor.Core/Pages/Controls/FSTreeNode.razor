@@ -7,18 +7,21 @@
 {
     @if (childDirectoryDic.Count > 0)
     {
-        <span class="caret @caretDirection" @onclick="ExpandDirectory">
+        <span class="caret @caretDirection" @onclick="ExpandNode">
             <small>@DriveVolumeLabel (@TargetRootDirectoryInfo.Name)</small>
         </span>
 
-        <ul class="nested @showChild">
-            @foreach (var dirInfo in childDirectoryDic)
-            {
-                <li>
-                    <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
-                </li>
-            }
-        </ul>
+        @if (isExpanded)
+        {
+            <ul class="nested @showChild">
+                @foreach (var dirInfo in childDirectoryDic)
+                {
+                    <li>
+                        <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
+                    </li>
+                }
+            </ul>
+        }
     }
     else
     {
@@ -29,18 +32,21 @@ else
 {
     @if (childDirectoryDic.Count > 0)
     {
-        <span class="caret @caretDirection" @onclick="ExpandDirectory">
+        <span class="caret @caretDirection" @onclick="ExpandNode">
             <small>@TargetRootDirectoryInfo.Name</small>
         </span>
 
-        <ul class="nested @showChild">
-            @foreach (var dirInfo in childDirectoryDic)
-            {
-                <li>
-                    <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
-                </li>
-            }
-        </ul>
+        @if (isExpanded)
+        {
+            <ul class="nested @showChild">
+                @foreach (var dirInfo in childDirectoryDic)
+                {
+                    <li>
+                        <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
+                    </li>
+                }
+            </ul>
+        }
     }
     else
     {
@@ -53,6 +59,7 @@ else
 
     private string showChild;
     private string caretDirection;
+    private bool isExpanded;
 
     private Dictionary<string, System.IO.DirectoryInfo> childDirectoryDic = new Dictionary<string, System.IO.DirectoryInfo>();
 
@@ -68,6 +75,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await GetChildDirectoryList();
+    }
+
+
+    private async Task GetChildDirectoryList()
+    {
         try
         {
             var dirInfos = await FSService.GetDirectoryInfos(TargetRootDirectoryInfo.FullName);
@@ -82,9 +95,11 @@ else
         }
     }
 
-    private void ExpandDirectory()
+    private void ExpandNode()
     {
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         showChild = string.IsNullOrEmpty(showChild) ? "active" : "";
+
+        isExpanded = !isExpanded;
     }
 }
