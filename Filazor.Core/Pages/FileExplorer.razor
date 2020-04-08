@@ -6,19 +6,73 @@
 
 
 <style>
+
     /* Remove default bullets */
     ul, #FSTreeView {
         list-style-type: none;
-    }
-
-    ul {
-        padding-left: 25px;
+        padding: 0;
+        margin: 0;
     }
 
     /* Remove margins and padding from the parent ul */
     #FSTreeView {
         margin: 0;
         padding: 0;
+    }
+
+    li > span:hover {
+        background-color: aliceblue;
+        border: 1px solid;
+        border-color: deepskyblue;
+    }
+
+    li span {
+        padding-left: 5px;
+    }
+    li li span { 
+        padding-left: 20px; 
+    }
+    li li li span {
+        padding-left: 35px;
+    }
+    li li li li span {
+        padding-left: 50px;
+    }
+    li li li li li span {
+        padding-left: 65px;
+    }
+    li li li li li li span {
+        padding-left: 80px;
+    }
+    li li li li li li li span {
+        padding-left: 95px;
+    }
+    li li li li li li li li span {
+        padding-left: 110px;
+    }
+    li li li li li li li li li span {
+        padding-left: 125px;
+    }
+    li li li li li li li li li li span {
+        padding-left: 140px;
+    }
+    li li li li li li li li li li li span {
+        padding-left: 155px;
+    }
+    li li li li li li li li li li li li span {
+        padding-left: 170px;
+    }
+    li li li li li li li li li li li li li span {
+        padding-left: 185px;
+    }
+    li li li li li li li li li li li li li li span {
+        padding-left: 200px;
+    }
+    li li li li li li li li li li li li li li li span {
+        padding-left: 215px;
+    }
+    li li li li li li li li li li li li li li li li span {
+        padding-left: 230px;
     }
 
     /* Style the caret/arrow */
@@ -52,7 +106,7 @@
     }
 
     .item-selected {
-        background-color: aliceblue;
+        background-color: lightgray;
     }
 
     .row > div {
@@ -80,10 +134,10 @@ else
         </div>
 
         <div class="row" style="height: 600px;">
-            <div class="col-4 px-2 py-2">
+            <div class="col-4 px-1 py-1">
                 <ul id="FSTreeView">
-                    <li class="@selectedList">
-                        <span class="caret ml-2 @caretDirection" @onclick="OnClickHostItem">
+                    <li>
+                        <span class="caret @caretDirection @selectedMachine" style="display: block;" @onclick="OnClickHostItem" >
                             <i class="material-icons align-middle" style="color: dimgrey">
                                 computer
                             </i>
@@ -116,7 +170,7 @@ else
     private System.IO.DriveInfo[] driveInfos;
 
     private string caretDirection;
-    private string selectedList;
+    private string selectedMachine;
     private string showDrives;
 
 
@@ -131,7 +185,7 @@ else
 
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         showDrives = string.IsNullOrEmpty(showDrives) ? "active" : "";
-        selectedList = string.IsNullOrEmpty(selectedList) ? "item-selected" : "";
+        selectedMachine = string.IsNullOrEmpty(selectedMachine) ? "item-selected" : "";
 
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
