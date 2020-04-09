@@ -20,58 +20,68 @@
         padding: 0;
     }
 
-    li > span:hover {
-        background-color: aliceblue;
-        border: 1px solid;
-        border-color: deepskyblue;
+    li {
+        cursor: pointer;
+        /* Prevent text selection */
+        user-select: none;          /* standard syntax */
+        -webkit-user-select: none;  /* webkit (safari, chrome) browsers */
+        -moz-user-select: none;     /* mozilla browsers */
+        -khtml-user-select: none;   /* webkit (konqueror) browsers */
+        -ms-user-select: none;      /* IE10+ */
     }
 
-    li span {
+    li > span:hover {
+        background-color: aliceblue;
+        outline: 1px solid;
+        outline-color: deepskyblue;
+    }
+
+    li > span {
         padding-left: 5px;
     }
-    li li span { 
-        padding-left: 20px; 
+    li li > span { 
+        padding-left: 15px; 
     }
-    li li li span {
+    li li li > span {
         padding-left: 35px;
     }
-    li li li li span {
+    li li li li > span {
         padding-left: 50px;
     }
-    li li li li li span {
+    li li li li li > span {
         padding-left: 65px;
     }
-    li li li li li li span {
+    li li li li li li > span {
         padding-left: 80px;
     }
-    li li li li li li li span {
+    li li li li li li li > span {
         padding-left: 95px;
     }
-    li li li li li li li li span {
+    li li li li li li li li > span {
         padding-left: 110px;
     }
-    li li li li li li li li li span {
+    li li li li li li li li li > span {
         padding-left: 125px;
     }
-    li li li li li li li li li li span {
+    li li li li li li li li li li > span {
         padding-left: 140px;
     }
-    li li li li li li li li li li li span {
+    li li li li li li li li li li li > span {
         padding-left: 155px;
     }
-    li li li li li li li li li li li li span {
+    li li li li li li li li li li li li > span {
         padding-left: 170px;
     }
-    li li li li li li li li li li li li li span {
+    li li li li li li li li li li li li li > span {
         padding-left: 185px;
     }
-    li li li li li li li li li li li li li li span {
+    li li li li li li li li li li li li li li > span {
         padding-left: 200px;
     }
-    li li li li li li li li li li li li li li li span {
+    li li li li li li li li li li li li li li li > span {
         padding-left: 215px;
     }
-    li li li li li li li li li li li li li li li li span {
+    li li li li li li li li li li li li li li li li > span {
         padding-left: 230px;
     }
 
@@ -106,7 +116,7 @@
     }
 
     .item-selected {
-        background-color: lightgray;
+        background-color: aliceblue;
     }
 
     .row > div {
@@ -137,7 +147,8 @@ else
             <div class="col-4 px-1 py-1">
                 <ul id="FSTreeView">
                     <li>
-                        <span class="caret @caretDirection @selectedMachine" style="display: block;" @onclick="OnClickHostItem" >
+                        <span class="@selectedMachine" style="display: block;" @onclick="OnClickHostItem" @ondblclick="OnDblClickHostItem" >
+                            <span class="caret @caretDirection" @onclick="OnClickCaret"/>
                             <i class="material-icons align-middle" style="color: dimgrey">
                                 computer
                             </i>
@@ -149,7 +160,10 @@ else
                             @foreach (var driveInfo in driveInfos)
                             {
                                 <li>
-                                    <Filazor.Core.Pages.Controls.FSTreeNode IsDrive=true DriveVolumeLabel=@driveInfo.VolumeLabel TargetRootDirectoryInfo=@driveInfo.RootDirectory />
+                                    <Filazor.Core.Pages.Controls.FSTreeNode IsDrive=true 
+                                                                            DriveVolumeLabel=@driveInfo.VolumeLabel 
+                                                                            TargetRootDirectoryInfo=@driveInfo.RootDirectory
+                                                                            OnClickCallback="@OnClickNode"/>
                                 </li>
                             }
                             </ul>
@@ -158,7 +172,7 @@ else
                 </ul>
             </div>
             <div class="col-8 px-1">
-
+                @test
             </div>
         </div>
     </div>
@@ -173,21 +187,42 @@ else
     private string selectedMachine;
     private string showDrives;
 
+    private string test;
 
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
     }
 
+    private async void OnClickCaret()
+    {
+        ExpandAction();
+    }
+
     private async void OnClickHostItem()
+    {
+        selectedMachine = "item-selected";
+    }
+
+    private async void OnDblClickHostItem()
+    {
+        ExpandAction();
+    }
+
+    private async void ExpandAction()
     {
         driveInfos = await FSService.GetDriveListAsync();
 
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         showDrives = string.IsNullOrEmpty(showDrives) ? "active" : "";
-        selectedMachine = string.IsNullOrEmpty(selectedMachine) ? "item-selected" : "";
+        selectedMachine = "item-selected";
 
         await InvokeAsync(async () => { this.StateHasChanged(); });
+    }
+
+    private async void OnClickNode(Filazor.Core.Pages.Controls.FSTreeNode args)
+    {
+        test = args.TargetRootDirectoryInfo.FullName;
     }
 }
 

@@ -5,7 +5,8 @@
 
 @if (childDirectoryDic.Count > 0)
 {
-    <span class="caret @caretDirection @selected" style="display: block;" @onclick="ExpandNode">
+    <span class="@selected" style="display: block;" @onclick="SelectedNode" @ondblclick="ExpandNode">
+        <span class="caret @caretDirection" @onclick="ExpandNode"></span>
         <small>@nodeText</small>
     </span>
 
@@ -15,7 +16,9 @@
             @foreach (var dirInfo in childDirectoryDic)
             {
                 <li>
-                    <FSTreeNode IsDrive=false TargetRootDirectoryInfo=@dirInfo.Value />
+                    <FSTreeNode IsDrive=false 
+                                TargetRootDirectoryInfo=@dirInfo.Value
+                                OnClickCallback="@OnClickCallback" />
                 </li>
             }
         </ul>
@@ -23,7 +26,7 @@
 }
 else
 {
-    <span><small>@nodeText</small></span>
+    <span class="@selected" style="display: block;" @onclick="SelectedNode"><small>@nodeText</small></span>
 }
 
 
@@ -45,6 +48,9 @@ else
 
     [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo { get; set; }
+
+    [Parameter]
+    public EventCallback<FSTreeNode> OnClickCallback { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -72,11 +78,18 @@ else
         }
     }
 
+    private async void SelectedNode()
+    {
+        selected = "item-selected";
+        
+        await OnClickCallback.InvokeAsync(this);
+    }
+
     private void ExpandNode()
     {
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         showChild = string.IsNullOrEmpty(showChild) ? "active" : "";
-        selected = string.IsNullOrEmpty(selected) ? "item-selected" : "";
+        selected = "item-selected";
 
         isExpanded = !isExpanded;
     }
