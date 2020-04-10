@@ -1,6 +1,7 @@
 ﻿@page "/main"
 
 @using Filazor.Core.Data
+@using Filazor.Core.Pages.Controls 
 
 @inject FileSystemService FSService
 
@@ -160,10 +161,10 @@ else
                             @foreach (var driveInfo in driveInfos)
                             {
                                 <li>
-                                    <Filazor.Core.Pages.Controls.FSTreeNode IsDrive=true 
-                                                                            DriveVolumeLabel=@driveInfo.VolumeLabel 
-                                                                            TargetRootDirectoryInfo=@driveInfo.RootDirectory
-                                                                            OnClickCallback="@OnClickNode"/>
+                                    <FSTreeNode IsDrive=true 
+                                                DriveVolumeLabel=@driveInfo.VolumeLabel 
+                                                TargetRootDirectoryInfo=@driveInfo.RootDirectory
+                                                OnClickCallback="@OnClickNode"/>
                                 </li>
                             }
                             </ul>
@@ -187,6 +188,7 @@ else
     private string selectedMachine;
     private string showDrives;
 
+    private FSTreeNode lastSelectedNode;
     private string test;
 
     protected override async Task OnInitializedAsync()
@@ -201,6 +203,12 @@ else
 
     private async void OnClickHostItem()
     {
+        if (lastSelectedNode != null)
+        {
+            lastSelectedNode.SetDefaultStyle();
+            lastSelectedNode = null;
+        }
+
         selectedMachine = "item-selected";
     }
 
@@ -220,9 +228,20 @@ else
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
 
-    private async void OnClickNode(Filazor.Core.Pages.Controls.FSTreeNode args)
+    private async void OnClickNode(FSTreeNode args)
     {
         test = args.TargetRootDirectoryInfo.FullName;
+
+        if (lastSelectedNode == null)
+        {
+            selectedMachine = null;
+        }
+        else
+        {
+            lastSelectedNode.SetDefaultStyle();
+        }
+
+        lastSelectedNode = args;
     }
 }
 

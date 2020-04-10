@@ -80,9 +80,9 @@ else
 
     private async void SelectedNode()
     {
-        selected = "item-selected";
-        
         await OnClickCallback.InvokeAsync(this);
+
+        selected = "item-selected";
     }
 
     private void ExpandNode()
@@ -92,5 +92,10 @@ else
         selected = "item-selected";
 
         isExpanded = !isExpanded;
+    }
+
+    public void SetDefaultStyle()
+    {
+        selected = null;
     }
 }
