@@ -7,6 +7,9 @@
 {
     <span class="@selected" style="display: block;" @onclick="SelectedNode" @ondblclick="ExpandNode">
         <span class="caret @caretDirection" @onclick="ExpandNode"></span>
+        <i class="material-icons align-middle" style="font-size: 18px; color: @iconColor;">
+            @iconText
+        </i>
         <small>@nodeText</small>
     </span>
 
@@ -16,7 +19,7 @@
             @foreach (var dirInfo in childDirectoryDic)
             {
                 <li>
-                    <FSTreeNode IsDrive=false 
+                    <FSTreeNode IsDrive=false
                                 TargetRootDirectoryInfo=@dirInfo.Value
                                 OnClickCallback="@OnClickCallback" />
                 </li>
@@ -26,7 +29,13 @@
 }
 else
 {
-    <span class="@selected" style="display: block;" @onclick="SelectedNode"><small>@nodeText</small></span>
+    <span class="@selected" style="display: block;" @onclick="SelectedNode">
+        <span style="width: 11px; display: inline-block;"></span>
+        <i class="material-icons align-middle" style="font-size: 18px; color: @iconColor;">
+            @iconText
+        </i>
+        <small>@nodeText</small>
+    </span>
 }
 
 
@@ -37,6 +46,8 @@ else
     private string selected;
     private bool isExpanded;
     private string nodeText;
+    private string iconText;
+    private string iconColor;
 
     private Dictionary<string, System.IO.DirectoryInfo> childDirectoryDic = new Dictionary<string, System.IO.DirectoryInfo>();
 
@@ -55,8 +66,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (IsDrive) nodeText = $"{DriveVolumeLabel} ({TargetRootDirectoryInfo.Name})";
-        else nodeText = TargetRootDirectoryInfo.Name;
+        if (IsDrive)
+        {
+            nodeText = $"{DriveVolumeLabel} ({TargetRootDirectoryInfo.Name})";
+            iconText = "storage";
+            iconColor = "dimgray";
+        }
+        else
+        {
+            nodeText = TargetRootDirectoryInfo.Name;
+            iconText = "folder";
+            iconColor = "gold";
+        }
 
         await GetChildDirectoryList();
     }
@@ -97,5 +118,7 @@ else
     public void SetDefaultStyle()
     {
         selected = null;
+
+
     }
 }

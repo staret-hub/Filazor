@@ -145,13 +145,13 @@ else
         </div>
 
         <div class="row" style="height: 600px;">
-            <div class="col-4 px-1 py-1">
+            <div class="col-4 px-1 py-1" style="height: 100%; overflow: auto;">
                 <ul id="FSTreeView">
                     <li>
                         <span class="@selectedMachine" style="display: block;" @onclick="OnClickHostItem" @ondblclick="OnDblClickHostItem" >
                             <span class="caret @caretDirection" @onclick="OnClickCaret"/>
-                            <i class="material-icons align-middle" style="color: dimgrey">
-                                computer
+                            <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
+                                desktop_windows
                             </i>
                             <small>@hostName</small>
                         </span>
@@ -162,7 +162,7 @@ else
                             {
                                 <li>
                                     <FSTreeNode IsDrive=true 
-                                                DriveVolumeLabel=@driveInfo.VolumeLabel 
+                                                DriveVolumeLabel=@driveInfo.VolumeLabel
                                                 TargetRootDirectoryInfo=@driveInfo.RootDirectory
                                                 OnClickCallback="@OnClickNode"/>
                                 </li>
