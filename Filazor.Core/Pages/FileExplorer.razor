@@ -164,7 +164,7 @@ else
                                     <FSTreeNode IsDrive=true 
                                                 DriveVolumeLabel=@driveInfo.VolumeLabel
                                                 TargetRootDirectoryInfo=@driveInfo.RootDirectory
-                                                OnClickCallback="@OnClickNode"/>
+                                                OnClickCallback="@OnClickNodeCallback"/>
                                 </li>
                             }
                             </ul>
@@ -172,8 +172,8 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-8 px-1">
-                @test
+            <div class="col-8 px-1 py-1" style="height: 100%; overflow: auto;">
+                <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" />
             </div>
         </div>
     </div>
@@ -189,7 +189,7 @@ else
     private string showDrives;
 
     private FSTreeNode lastSelectedNode;
-    private string test;
+    private System.IO.DirectoryInfo lastSelectedDirInfo;
 
     protected override async Task OnInitializedAsync()
     {
@@ -228,10 +228,8 @@ else
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
 
-    private async void OnClickNode(FSTreeNode args)
+    private async void OnClickNodeCallback(FSTreeNode args)
     {
-        test = args.TargetRootDirectoryInfo.FullName;
-
         if (lastSelectedNode == null)
         {
             selectedMachine = null;
@@ -242,6 +240,7 @@ else
         }
 
         lastSelectedNode = args;
+        lastSelectedDirInfo = args.TargetRootDirectoryInfo;
     }
 }
 

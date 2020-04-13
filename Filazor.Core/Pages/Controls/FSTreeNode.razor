@@ -85,17 +85,12 @@ else
 
     private async Task GetChildDirectoryList()
     {
-        try
-        {
-            var dirInfos = await FSService.GetDirectoryInfos(TargetRootDirectoryInfo.FullName);
-            foreach (var dirInfo in dirInfos)
-            {
-                childDirectoryDic.Add(dirInfo.Name, dirInfo);
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
+        var dirInfos = await FSService.GetDirectoryInfos(TargetRootDirectoryInfo.FullName);
+        if (dirInfos == null) return;
 
+        foreach (var dirInfo in dirInfos)
+        {
+            childDirectoryDic.Add(dirInfo.Name, dirInfo);
         }
     }
 

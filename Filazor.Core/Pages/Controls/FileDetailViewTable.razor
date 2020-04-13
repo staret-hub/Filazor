@@ -1,0 +1,90 @@
+﻿@using Filazor.Core.Data
+
+@inject FileSystemService FSService
+
+
+<table class="table table-light table-sm table-hover small">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date modified</th>
+            <th>Type</th>
+            <th>Size</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (rootDirInfo == null || (directoryInfos == null || fileInfos == null))
+        {
+            <tr>
+                <td colspan="5" style="text-align: center;">This folder is empty.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var dirInfo in directoryInfos)
+            {
+                <tr>
+                    <td>
+                        <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
+                            folder
+                        </i>
+                        @dirInfo.Name
+                    </td>
+                    <td>@dirInfo.LastWriteTime</td>
+                    <td>File folder</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+
+            @foreach (var fileInfo in fileInfos)
+            {
+                <tr>
+                    <td>@fileInfo.Name</td>
+                    <td>@fileInfo.LastWriteTime</td>
+                    <td>File</td>
+                    <td style="text-align: right;">@fileInfo.Length.ToString("#,##0")b</td>
+                    <td></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@code {
+    private System.IO.DirectoryInfo rootDirInfo;
+    private System.IO.DirectoryInfo[] directoryInfos;
+    private System.IO.FileInfo[] fileInfos;
+
+
+
+    [Parameter]
+    public System.IO.DirectoryInfo TargetRootDirectoryInfo
+    {
+        get
+        {
+            return rootDirInfo;
+        }
+        set
+        {
+            rootDirInfo = value;
+
+            if (rootDirInfo != null)
+                SetDirectory();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async void SetDirectory()
+    {
+        directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
+        fileInfos = rootDirInfo.GetFiles();
+
+        await InvokeAsync(async () => { this.StateHasChanged(); });
+    }
+}

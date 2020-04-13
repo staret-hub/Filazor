@@ -30,9 +30,24 @@ namespace Filazor.Core.Data
         {
             return Task.Run(() =>
             {
-                var dirInfo = new DirectoryInfo(path);
+                DirectoryInfo[] result = null;
 
-                return dirInfo.GetDirectories();
+                try
+                {
+                    var dirInfo = new DirectoryInfo(path);
+
+                    result = dirInfo.GetDirectories();
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    Console.WriteLine("UnauthorizedAccessException = {1}", e.Message, path);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                return result;
             });
         }
     }
