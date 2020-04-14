@@ -40,7 +40,10 @@
             @foreach (var fileInfo in fileInfos)
             {
                 <tr>
-                    <td>@fileInfo.Name</td>
+                    <td valign="middle">
+                        <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                        @fileInfo.Name
+                    </td>
                     <td>@fileInfo.LastWriteTime</td>
                     <td>File</td>
                     <td style="text-align: right;">@fileInfo.Length.ToString("#,##0")b</td>
