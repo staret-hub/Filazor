@@ -3,6 +3,8 @@
 @inject FileSystemService FSService
 
 
+<small>@test</small>
+
 <table class="table table-light table-sm table-hover small">
     <thead>
         <tr>
@@ -23,7 +25,7 @@
         {
             @foreach (var dirInfo in directoryInfos)
             {
-                <tr>
+                <tr @ondblclick="@(e => OnDblClickTR(dirInfo))">
                     <td>
                         <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
                             folder
@@ -56,11 +58,14 @@
 
 
 @code {
+    private string test;
+
     private System.IO.DirectoryInfo rootDirInfo;
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
 
-
+    [Parameter]
+    public EventCallback<System.IO.DirectoryInfo> OnDblClickCallback { get; set; }
 
     [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo
@@ -89,5 +94,10 @@
         fileInfos = rootDirInfo.GetFiles();
 
         await InvokeAsync(async () => { this.StateHasChanged(); });
+    }
+
+    private async void OnDblClickTR(System.IO.DirectoryInfo dirInfo)
+    {
+        await OnDblClickCallback.InvokeAsync(dirInfo);
     }
 }

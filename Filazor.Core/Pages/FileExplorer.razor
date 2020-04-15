@@ -173,7 +173,7 @@ else
                 </ul>
             </div>
             <div class="col-8 px-1 py-1" style="height: 100%; overflow: auto;">
-                <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" />
+                <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" OnDblClickCallback="OnDblClickDetailCallback" />
             </div>
         </div>
     </div>
@@ -241,6 +241,11 @@ else
 
         lastSelectedNode = args;
         lastSelectedDirInfo = args.TargetRootDirectoryInfo;
+    }
+
+    private async void OnDblClickDetailCallback(System.IO.DirectoryInfo selectedDirInfo)
+    {
+        lastSelectedDirInfo = selectedDirInfo;
     }
 }
 
