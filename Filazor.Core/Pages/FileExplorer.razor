@@ -120,9 +120,12 @@
         background-color: aliceblue;
     }
 
-    .row > div {
+    .row {
+        display: flex;
+        align-items: center;
         border: 1px solid lightgrey;
     }
+
 </style>
 
 @if (string.IsNullOrEmpty(hostName))
@@ -139,13 +142,19 @@ else
         </div>
 
         <div class="row">
-            <div class="col px-1">
-                <Filazor.Core.Pages.Controls.FileNavigationBar />
+            <div class="col-2 px-1">
+                <Navigator />
+            </div>
+            <div class="col-7 px-1">
+                <AddressBar CurrentPath="@currentPath" />
+            </div>
+            <div class="col-3 px-1">
+                <SearchBox />
             </div>
         </div>
 
         <div class="row" style="height: 600px;">
-            <div class="col-4 px-1 py-1" style="height: 100%; overflow: auto;">
+            <div class="col-4 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 <ul id="FSTreeView">
                     <li>
                         <span class="@selectedMachine" style="display: block;" @onclick="OnClickHostItem" @ondblclick="OnDblClickHostItem" >
@@ -172,7 +181,7 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-8 px-1 py-1" style="height: 100%; overflow: auto;">
+            <div class="col-8 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" OnDblClickCallback="OnDblClickDetailCallback" />
             </div>
         </div>
@@ -187,6 +196,7 @@ else
     private string caretDirection;
     private string selectedMachine;
     private string showDrives;
+    private string currentPath;
 
     private FSTreeNode lastSelectedNode;
     private System.IO.DirectoryInfo lastSelectedDirInfo;
@@ -225,6 +235,8 @@ else
         showDrives = string.IsNullOrEmpty(showDrives) ? "active" : "";
         selectedMachine = "item-selected";
 
+        currentPath = hostName;
+
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
 
@@ -241,11 +253,13 @@ else
 
         lastSelectedNode = args;
         lastSelectedDirInfo = args.TargetRootDirectoryInfo;
+        currentPath = lastSelectedDirInfo.FullName;
     }
 
     private async void OnDblClickDetailCallback(System.IO.DirectoryInfo selectedDirInfo)
     {
         lastSelectedDirInfo = selectedDirInfo;
+        currentPath = lastSelectedDirInfo.FullName;
     }
 }
 

@@ -1,0 +1,15 @@
+﻿<div class="input-group input-group-sm">
+    <input type="text" class="form-control" id="fullPath" @bind="@CurrentPath" />
+    @*<div class="input-group-append">
+        <button class="btn btn-sm btn-outline-secondary" type="button" id="refresh">
+            <i class="material-icons align-middle">
+                refresh
+            </i>
+        </button>
+    </div>*@
+</div>
+
+@code {
+    [Parameter]
+    public string CurrentPath {get; set;}
+}
