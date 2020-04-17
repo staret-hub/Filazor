@@ -1,6 +1,8 @@
 ﻿@using Filazor.Core.Data
 
 @inject FileSystemService FSService
+@inject NavigationManager MyNavigationManager
+
 
 
 <small>@test</small>
@@ -41,7 +43,7 @@
 
             @foreach (var fileInfo in fileInfos)
             {
-                <tr>
+                <tr @ondblclick="(e => OnDblClickFileTR(fileInfo))">
                     <td valign="middle">
                         <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
                         @fileInfo.Name
@@ -63,6 +65,7 @@
     private System.IO.DirectoryInfo rootDirInfo;
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
+    private bool accessDenied;
 
     [Parameter]
     public EventCallback<System.IO.DirectoryInfo> OnDblClickCallback { get; set; }
@@ -78,8 +81,10 @@
         {
             rootDirInfo = value;
 
-            if (rootDirInfo != null)
-                SetDirectory();
+            if (rootDirInfo == null)
+                return;
+
+            SetDirectory();
         }
     }
 
@@ -91,7 +96,15 @@
     private async void SetDirectory()
     {
         directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
-        fileInfos = rootDirInfo.GetFiles();
+
+        try
+        {
+            fileInfos = rootDirInfo.GetFiles();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Exception: {0}", e.Message);
+        }
 
         await InvokeAsync(async () => { this.StateHasChanged(); });
     }
@@ -99,5 +112,11 @@
     private async void OnDblClickTR(System.IO.DirectoryInfo dirInfo)
     {
         await OnDblClickCallback.InvokeAsync(dirInfo);
+    }
+
+    private async void OnDblClickFileTR(System.IO.FileInfo fileInfo)
+    {
+        // not working
+        //await FSService.DownloadFile(fileInfo);
     }
 }

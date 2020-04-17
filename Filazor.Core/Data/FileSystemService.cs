@@ -8,6 +8,22 @@ namespace Filazor.Core.Data
 {
     public class FileSystemService
     {
+        public Dictionary<string, string> MimeTypes = new Dictionary<string, string>
+        {
+            {"txt", "text/plain"},
+            {"pdf", "application/pdf"},
+            {"doc", "application/vnd.ms-word"},
+            {"docx", "application/vnd.ms-word"},
+            {"xls", "application/vnd.ms-excel"},
+            {"xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},
+            {"png", "image/png"},
+            {"jpg", "image/jpeg"},
+            {"jpeg", "image/jpeg"},
+            {"gif", "image/gif"},
+            {"csv", "text/csv"}
+        }; 
+
+
         public Task<string> GetHostName()
         {
             return Task.Run(() =>
@@ -49,6 +65,26 @@ namespace Filazor.Core.Data
 
                 return result;
             });
+        }
+
+        public async Task<bool> DownloadFile(FileInfo fileInfo)
+        {
+            var uri = new System.Uri("https://localhost:5001/main");
+
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+            var response = await client.GetAsync(uri);
+            using (var fs = new FileStream(fileInfo.FullName, FileMode.Open))
+            {
+                await response.Content.CopyToAsync(fs);
+            }
+
+            return true;
+        }
+
+        private string GetContentType(string path)
+        {
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return MimeTypes[ext];
         }
     }
 }
