@@ -116,7 +116,6 @@
 
     private async void OnDblClickFileTR(System.IO.FileInfo fileInfo)
     {
-        // not working
-        //await FSService.DownloadFile(fileInfo);
+        MyNavigationManager.NavigateTo($"/download?fileName={fileInfo.FullName}", true);
     }
 }
