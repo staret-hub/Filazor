@@ -1,11 +1,18 @@
-﻿<div class="btn-toolbar py-1" role="toolbar">
+﻿<style>
+    .material-icons {
+        font-size: 18px;
+    }
+</style>
 
-    <button type="button" class="btn btn-light btn-sm mr-1">
+
+<div class="btn-toolbar py-1" role="toolbar">
+
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
         <i class="material-icons align-middle">
             arrow_back
         </i>
     </button>
-    <button type="button" class="btn btn-light btn-sm mr-1">
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
         <i class="material-icons align-middle">
             arrow_forward
         </i>
@@ -15,7 +22,7 @@
                 expand_more
             </i>
         </button>*@
-    <button type="button" class="btn btn-light btn-sm mr-1">
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
         <i class="material-icons align-middle">
             arrow_upward
         </i>
@@ -24,5 +31,7 @@
 </div>
 
 @code {
+    private bool isDisabled = true;
+
 
 }
