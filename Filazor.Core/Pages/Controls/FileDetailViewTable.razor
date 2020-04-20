@@ -50,7 +50,7 @@
                     </td>
                     <td>@fileInfo.LastWriteTime</td>
                     <td>File</td>
-                    <td style="text-align: right;">@fileInfo.Length.ToString("#,##0")b</td>
+                    <td style="text-align: right;">@GetFileSize(fileInfo)</td>
                     <td></td>
                 </tr>
             }
@@ -117,5 +117,19 @@
     private async void OnDblClickFileTR(System.IO.FileInfo fileInfo)
     {
         MyNavigationManager.NavigateTo($"/download?fileName={fileInfo.FullName}", true);
+    }
+
+    private string GetFileSize(System.IO.FileInfo fileInfo)
+    {
+        if (fileInfo == null)
+        {
+            return "";
+        }
+
+        var result = fileInfo.Length / 1024.0;
+        result = Math.Ceiling(result);
+        Console.WriteLine(result);
+
+        return $"{result.ToString("#,###")}KB";
     }
 }
