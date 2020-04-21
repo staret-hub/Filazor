@@ -2,28 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace Filazor.Core.Data
 {
     public class FileSystemService
     {
-        public Dictionary<string, string> MimeTypes = new Dictionary<string, string>
-        {
-            {"txt", "text/plain"},
-            {"pdf", "application/pdf"},
-            {"doc", "application/vnd.ms-word"},
-            {"docx", "application/vnd.ms-word"},
-            {"xls", "application/vnd.ms-excel"},
-            {"xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},
-            {"png", "image/png"},
-            {"jpg", "image/jpeg"},
-            {"jpeg", "image/jpeg"},
-            {"gif", "image/gif"},
-            {"csv", "text/csv"}
-        }; 
-
-
         public Task<string> GetHostName()
         {
             return Task.Run(() =>
@@ -37,7 +22,7 @@ namespace Filazor.Core.Data
             return Task.Run(() =>
             {
                 DriveInfo[] driveInfos = DriveInfo.GetDrives();
-               
+
                 return driveInfos;
             });
         }
@@ -54,37 +39,61 @@ namespace Filazor.Core.Data
 
                     result = dirInfo.GetDirectories();
                 }
-                catch (UnauthorizedAccessException e)
-                {
-                    Console.WriteLine("UnauthorizedAccessException = {1}", e.Message, path);
-                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    if (ex is UnauthorizedAccessException || ex is SecurityException)
+                    {
+                        Console.WriteLine("{0} = {1}", path, ex.Message);
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0}", ex.Message, path);
+                    }
                 }
 
-                return result;
+                List<DirectoryInfo> filteredList = new List<DirectoryInfo>();
+                if (result != null && result.Length > 0)
+                {
+                    foreach (var dirInfo in result)
+                    {
+                        if ((dirInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden
+                            || (dirInfo.Attributes & FileAttributes.System) == FileAttributes.System)
+                        {
+                            //Console.WriteLine("{0} = {1}", dirInfo.FullName, dirInfo.Attributes.ToString());
+                            continue;
+                        }
+
+                        filteredList.Add(dirInfo);
+                    }
+                }
+
+                return filteredList.ToArray();
             });
         }
 
-        public async Task<bool> DownloadFile(FileInfo fileInfo)
+        public Task<FileInfo[]> GetFiles(DirectoryInfo dirInfo)
         {
-            var uri = new System.Uri("https://localhost:5001/main");
+            return Task.Run(() =>
+            { 
+                List<FileInfo> result = new List<FileInfo>();
 
-            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-            var response = await client.GetAsync(uri);
-            using (var fs = new FileStream(fileInfo.FullName, FileMode.Open))
-            {
-                await response.Content.CopyToAsync(fs);
-            }
+                var fileInfos = dirInfo.GetFiles();
+                if (fileInfos != null || fileInfos.Length > 0)
+                {
+                    foreach (var fileInfo in fileInfos)
+                    {
+                        if ((fileInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden
+                            || (fileInfo.Attributes & FileAttributes.System) == FileAttributes.System)
+                        {
+                            continue;
+                        }
 
-            return true;
-        }
+                        result.Add(fileInfo);
+                    }
+                }
 
-        private string GetContentType(string path)
-        {
-            var ext = Path.GetExtension(path).ToLowerInvariant();
-            return MimeTypes[ext];
+                return result.ToArray();
+            });
         }
     }
 }

@@ -99,7 +99,7 @@
 
         try
         {
-            fileInfos = rootDirInfo.GetFiles();
+            fileInfos = await FSService.GetFiles(rootDirInfo);
         }
         catch (Exception e)
         {
@@ -128,7 +128,6 @@
 
         var result = fileInfo.Length / 1024.0;
         result = Math.Ceiling(result);
-        Console.WriteLine(result);
 
         return $"{result.ToString("#,###")}KB";
     }
