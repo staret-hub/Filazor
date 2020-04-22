@@ -1,5 +1,6 @@
 ﻿@page "/main"
 
+@using System.IO
 @using Filazor.Core.Data
 @using Filazor.Core.Pages.Controls 
 
@@ -146,7 +147,7 @@ else
                 <Navigator />
             </div>
             <div class="col-7 px-1">
-                <AddressBar CurrentPath="@currentPath" />
+                <AddressBar CurrentPath="@addressbarText" />
             </div>
             <div class="col-3 px-1">
                 <SearchBox />
@@ -157,8 +158,8 @@ else
             <div class="col-4 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 <ul id="FSTreeView">
                     <li>
-                        <span class="@selectedMachine" style="display: block;" @onclick="OnClickHostItem" @ondblclick="OnDblClickHostItem" >
-                            <span class="caret @caretDirection" @onclick="OnClickCaret"/>
+                        <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost" >
+                            <span class="caret @caretDirection" @onclick="ExpandHost"/>
                             <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
                                 desktop_windows
                             </i>
@@ -166,7 +167,7 @@ else
                         </span>
                         @if (driveInfos != null)
                         {
-                            <ul class="nested @showDrives">
+                            <ul class="nested @isActive">
                             @foreach (var driveInfo in driveInfos)
                             {
                                 <li>
@@ -191,27 +192,25 @@ else
 
 @code {
     private string hostName;
-    private System.IO.DriveInfo[] driveInfos;
+    private DriveInfo[] driveInfos;
 
     private string caretDirection;
-    private string selectedMachine;
-    private string showDrives;
-    private string currentPath;
+    private string selectedItem;
+    private string isActive;
+    private string addressbarText;
 
     private FSTreeNode lastSelectedNode;
-    private System.IO.DirectoryInfo lastSelectedDirInfo;
+    private DirectoryInfo lastSelectedDirInfo;
 
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
     }
 
-    private async void OnClickCaret()
-    {
-        ExpandAction();
-    }
-
-    private async void OnClickHostItem()
+    /// <summary>
+    /// Host node click event
+    /// </summary>
+    private void SelectedHost()
     {
         if (lastSelectedNode != null)
         {
@@ -219,32 +218,34 @@ else
             lastSelectedNode = null;
         }
 
-        selectedMachine = "item-selected";
+        selectedItem = "item-selected";
+        addressbarText = hostName;
     }
 
-    private async void OnDblClickHostItem()
-    {
-        ExpandAction();
-    }
-
-    private async void ExpandAction()
+    /// <summary>
+    /// Expand Host Event: Show all drives
+    /// </summary>
+    private async void ExpandHost()
     {
         driveInfos = await FSService.GetDriveListAsync();
 
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
-        showDrives = string.IsNullOrEmpty(showDrives) ? "active" : "";
-        selectedMachine = "item-selected";
+        isActive = string.IsNullOrEmpty(isActive) ? "active" : "";
+        selectedItem = "item-selected";
+        addressbarText = hostName;
 
-        currentPath = hostName;
-
-        await InvokeAsync(async () => { this.StateHasChanged(); });
+        await InvokeAsync(() => { this.StateHasChanged(); });
     }
 
-    private async void OnClickNodeCallback(FSTreeNode args)
+    /// <summary>
+    /// Child Node Click EventCallback
+    /// </summary>
+    /// <param name="args">Event Node</param>
+    private void OnClickNodeCallback(FSTreeNode args)
     {
         if (lastSelectedNode == null)
         {
-            selectedMachine = null;
+            selectedItem = null;
         }
         else
         {
@@ -253,13 +254,17 @@ else
 
         lastSelectedNode = args;
         lastSelectedDirInfo = args.TargetRootDirectoryInfo;
-        currentPath = lastSelectedDirInfo.FullName;
+        addressbarText = lastSelectedDirInfo.FullName;
     }
 
-    private async void OnDblClickDetailCallback(System.IO.DirectoryInfo selectedDirInfo)
+    /// <summary>
+    /// Child Node Double Click EventCallback
+    /// </summary>
+    /// <param name="selectedDirInfo">Selected DirectoryInfo</param>
+    private void OnDblClickDetailCallback(DirectoryInfo selectedDirInfo)
     {
         lastSelectedDirInfo = selectedDirInfo;
-        currentPath = lastSelectedDirInfo.FullName;
+        addressbarText = lastSelectedDirInfo.FullName;
     }
 }
 
