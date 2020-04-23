@@ -57,12 +57,9 @@
 
 
 @code {
-    private string test;
-
     private System.IO.DirectoryInfo rootDirInfo;
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
-    private bool accessDenied;
 
     [Parameter]
     public EventCallback<System.IO.DirectoryInfo> OnDblClickCallback { get; set; }
@@ -83,11 +80,6 @@
 
             SetDirectory();
         }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-
     }
 
     private async void SetDirectory()
@@ -111,7 +103,7 @@
         await OnDblClickCallback.InvokeAsync(dirInfo);
     }
 
-    private async void OnDblClickFileTR(System.IO.FileInfo fileInfo)
+    private void OnDblClickFileTR(System.IO.FileInfo fileInfo)
     {
         MyNavigationManager.NavigateTo($"/download?fileName={fileInfo.FullName}", true);
     }
