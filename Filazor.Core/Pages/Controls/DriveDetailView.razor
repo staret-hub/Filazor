@@ -1,0 +1,68 @@
+﻿@using System.IO 
+
+
+<style>
+
+    ::hover {
+
+    }
+
+</style>
+
+
+@if (DriveInfos == null)
+{
+    <Loader />
+}
+else
+{
+<div class="container">
+    <div class="row border-0">
+        @foreach (var driveInfo in DriveInfos)
+        {
+            int usingSpace = GetAvailableFreeSizePercent(driveInfo);
+
+            <div class="card border-0" style="width: 250px;max-width: 100%;">
+                <div class="row no-gutters border-0">
+                    <div class="col-md-2 border-0 text-center">
+                        <i class="material-icons align-middle" style="font-size: 28px; color: darkgray;">
+                            storage
+                        </i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="card-body p-1">
+                            <p class="card-title mb-0"><small>@driveInfo.VolumeLabel (@driveInfo.RootDirectory)</small></p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: @usingSpace%" aria-valuenow="@usingSpace" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="card-text"><small class="text-muted">@GetAvailableFreeSizeText(driveInfo)</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+}
+
+
+@code {
+    [Parameter]
+    public DriveInfo[] DriveInfos { get; set; }
+
+    private readonly long GIGA_BYTE = 1024 * 1024 * 1024;
+
+    private int GetAvailableFreeSizePercent(DriveInfo driveInfo)
+    {
+        var usingSpace = driveInfo.TotalSize - driveInfo.AvailableFreeSpace;
+        var percent = (double)usingSpace / (double)driveInfo.TotalSize * 100;
+        var result = Convert.ToInt32(percent);
+
+        return result;
+    }
+
+    private string GetAvailableFreeSizeText(DriveInfo driveInfo)
+    {
+        return $"{driveInfo.AvailableFreeSpace / GIGA_BYTE} GB free of {driveInfo.TotalSize / GIGA_BYTE} GB";
+    }
+}

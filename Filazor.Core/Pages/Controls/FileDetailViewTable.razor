@@ -95,7 +95,7 @@
             Console.WriteLine("Exception: {0}", e.Message);
         }
 
-        await InvokeAsync(async () => { this.StateHasChanged(); });
+        await InvokeAsync(() => { this.StateHasChanged(); });
     }
 
     private async void OnDblClickTR(System.IO.DirectoryInfo dirInfo)

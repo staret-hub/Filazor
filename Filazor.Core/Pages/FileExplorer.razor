@@ -155,7 +155,7 @@ else
         </div>
 
         <div class="row" style="height: 600px;">
-            <div class="col-4 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
+            <div class="col-3 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 <ul id="FSTreeView">
                     <li>
                         <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost" >
@@ -182,8 +182,15 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-8 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
-                <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" OnDblClickCallback="OnDblClickDetailCallback" />
+            <div class="col-9 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
+                @if (addressbarText == hostName)
+                {
+                    <DriveDetailView DriveInfos="@driveInfos" />
+                }
+                else
+                {
+                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" OnDblClickCallback="OnDblClickDetailCallback" />
+                }
             </div>
         </div>
     </div>
@@ -205,6 +212,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
+        driveInfos = await FSService.GetDriveListAsync();
+
+        // set default
+        if (driveInfos != null && driveInfos.Length > 0)
+        {
+            ExpandHost();
+        }
     }
 
     /// <summary>
