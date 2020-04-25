@@ -24,7 +24,7 @@
         {
             @foreach (var dirInfo in directoryInfos)
             {
-                <tr @ondblclick="@(e => OnDblClickTR(dirInfo))">
+                <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
                     <td>
                         <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
                             folder
@@ -40,7 +40,7 @@
 
             @foreach (var fileInfo in fileInfos)
             {
-                <tr @ondblclick="(e => OnDblClickFileTR(fileInfo))">
+                <tr @ondblclick="(e => SelectedFile(fileInfo))">
                     <td valign="middle">
                         <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
                         @fileInfo.Name
@@ -62,7 +62,7 @@
     private System.IO.FileInfo[] fileInfos;
 
     [Parameter]
-    public EventCallback<System.IO.DirectoryInfo> OnDblClickCallback { get; set; }
+    public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
 
     [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo
@@ -98,12 +98,12 @@
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
 
-    private async void OnDblClickTR(System.IO.DirectoryInfo dirInfo)
+    private async void SelectedDirectory(System.IO.DirectoryInfo dirInfo)
     {
-        await OnDblClickCallback.InvokeAsync(dirInfo);
+        await SelectedDirectoryCallback.InvokeAsync(dirInfo);
     }
 
-    private void OnDblClickFileTR(System.IO.FileInfo fileInfo)
+    private void SelectedFile(System.IO.FileInfo fileInfo)
     {
         MyNavigationManager.NavigateTo($"/download?fileName={fileInfo.FullName}", true);
     }

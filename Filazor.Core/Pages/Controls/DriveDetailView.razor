@@ -3,8 +3,8 @@
 
 <style>
 
-    ::hover {
-
+    .card-hover:hover {
+        background: aliceblue;
     }
 
 </style>
@@ -22,7 +22,7 @@ else
         {
             int usingSpace = GetAvailableFreeSizePercent(driveInfo);
 
-            <div class="card border-0" style="width: 250px;max-width: 100%;">
+            <div class="card card-hover border-0" style="width: 250px;max-width: 100%;" @ondblclick="@(e => SelectedDrive(driveInfo.RootDirectory))">
                 <div class="row no-gutters border-0">
                     <div class="col-md-2 border-0 text-center">
                         <i class="material-icons align-middle" style="font-size: 28px; color: darkgray;">
@@ -47,10 +47,19 @@ else
 
 
 @code {
+    private readonly long GIGA_BYTE = 1024 * 1024 * 1024;
+
     [Parameter]
     public DriveInfo[] DriveInfos { get; set; }
 
-    private readonly long GIGA_BYTE = 1024 * 1024 * 1024;
+    [Parameter]
+    public EventCallback<DirectoryInfo> SelectedDirectoryCallback { get; set; }
+
+
+    private async void SelectedDrive(DirectoryInfo directoryInfo)
+    {
+        await SelectedDirectoryCallback.InvokeAsync(directoryInfo);
+    }
 
     private int GetAvailableFreeSizePercent(DriveInfo driveInfo)
     {

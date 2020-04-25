@@ -185,11 +185,11 @@ else
             <div class="col-9 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 @if (addressbarText == hostName)
                 {
-                    <DriveDetailView DriveInfos="@driveInfos" />
+                    <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="SelectedDirectory" />
                 }
                 else
                 {
-                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" OnDblClickCallback="OnDblClickDetailCallback" />
+                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" SelectedDirectoryCallback="SelectedDirectory" />
                 }
             </div>
         </div>
@@ -275,7 +275,7 @@ else
     /// Child Node Double Click EventCallback
     /// </summary>
     /// <param name="selectedDirInfo">Selected DirectoryInfo</param>
-    private void OnDblClickDetailCallback(DirectoryInfo selectedDirInfo)
+    private void SelectedDirectory(DirectoryInfo selectedDirInfo)
     {
         lastSelectedDirInfo = selectedDirInfo;
         addressbarText = lastSelectedDirInfo.FullName;
