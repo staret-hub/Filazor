@@ -209,6 +209,16 @@ else
     private FSTreeNode lastSelectedNode;
     private DirectoryInfo lastSelectedDirInfo;
 
+
+    public string AddressbarText
+    {
+        get
+        {
+            return $"{hostName} > {lastSelectedDirInfo.FullName}";
+        }
+    }
+
+
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
@@ -268,7 +278,7 @@ else
 
         lastSelectedNode = args;
         lastSelectedDirInfo = args.TargetRootDirectoryInfo;
-        addressbarText = lastSelectedDirInfo.FullName;
+        addressbarText = AddressbarText;
     }
 
     /// <summary>
@@ -278,7 +288,7 @@ else
     private void SelectedDirectory(DirectoryInfo selectedDirInfo)
     {
         lastSelectedDirInfo = selectedDirInfo;
-        addressbarText = lastSelectedDirInfo.FullName;
+        addressbarText = AddressbarText;
     }
 }
 
