@@ -30,7 +30,6 @@ namespace Filazor.Core
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<FileSystemService>();
         }
 
