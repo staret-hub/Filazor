@@ -147,7 +147,7 @@ else
                 <Navigator />
             </div>
             <div class="col-7 px-1">
-                <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="AddressChanged" />
+                <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
             </div>
             <div class="col-3 px-1">
                 <SearchBox />
@@ -281,12 +281,6 @@ else
     {
         lastSelectedDirInfo = selectedDirInfo;
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
-    }
-
-    private void AddressChanged(string path)
-    {
-        var dirInfo = new DirectoryInfo(path);
-        SelectedDirectory(dirInfo);
     }
 }
 

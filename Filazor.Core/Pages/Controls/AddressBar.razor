@@ -58,7 +58,7 @@
     }
 
     [Parameter]
-    public EventCallback<string> AddressChangedCallback { get; set; }
+    public EventCallback<DirectoryInfo> AddressChangedCallback { get; set; }
 
 
     private async void AddressChanged(ChangeEventArgs args)
@@ -77,7 +77,7 @@
 
         if (AddressChangedCallback.HasDelegate)
         {
-            await AddressChangedCallback.InvokeAsync(changedPath);
+            await AddressChangedCallback.InvokeAsync(new DirectoryInfo(changedPath));
         }
     }
 
