@@ -1,0 +1,25 @@
+﻿
+<form method="post" enctype="multipart/form-data" asp-controller="FileUpload" asp-action="Index">
+    <div class="btn-toolbar py-1 px-2 float-md-right" role="toolbar">
+
+        @*<button type="button" class="btn btn-light btn-sm mr-1">
+            <span class="oi oi-data-transfer-download" style="padding-left: 3px; margin-right: 2px; font-size: 14px;"></span>
+        </button>*@
+        @*<input type="file" name="files" multiple />*@
+        @*<button type="button" class="btn btn-light btn-sm mr-1">
+            <span class="oi oi-data-transfer-upload" style="padding-left: 3px; margin-right: 2px; font-size: 14px;"></span>
+        </button>*@
+        <div>
+            <label for="file-input">
+                <span class="oi oi-data-transfer-upload align-middle"></span>
+            </label>
+            <input id="file-input" type="file" style="display: none;" />
+        </div>
+
+    </div>
+</form>
+
+
+@code {
+
+}
