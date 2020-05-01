@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Filazor.Core.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace Filazor.Core.Controller
 {
@@ -13,15 +14,16 @@ namespace Filazor.Core.Controller
     [ApiController]
     public class UploadController : ControllerBase
     {
-        private readonly IWebHostEnvironment environment;
-
-        public UploadController(IWebHostEnvironment environment)
-        {
-            this.environment = environment;
-        }
+        private readonly FileUploadEventNotifyService fileUploadEventNotifyService;
         
+        public UploadController(FileUploadEventNotifyService service)
+        {
+            fileUploadEventNotifyService = service;
+        }
+
+
         [HttpPost("[action]")]
-        public async Task<IActionResult> fileUploadAsync(IFormFile[] files, string currentDirectory)
+        public async Task<IActionResult> fileUploadAsync(IFormFile[] files, string uploadDirectory)
         {
             try
             {
@@ -29,7 +31,7 @@ namespace Filazor.Core.Controller
                 {
                     foreach (var file in HttpContext.Request.Form.Files)
                     {
-                        string path = Path.Combine(currentDirectory, file.FileName);
+                        string path = Path.Combine(uploadDirectory, file.FileName);
                         Console.WriteLine(path);
                         using (var stream = new FileStream(path, FileMode.Create))
                         {
@@ -38,6 +40,8 @@ namespace Filazor.Core.Controller
                         Console.WriteLine($"got file: {path}");
                     }
                 }
+
+                fileUploadEventNotifyService.Notify(this);
 
                 return StatusCode(200);
             }

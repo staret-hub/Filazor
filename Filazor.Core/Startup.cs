@@ -31,6 +31,7 @@ namespace Filazor.Core
             services.AddServerSideBlazor();
 
             services.AddSingleton<FileSystemService>();
+            services.AddSingleton<FileUploadEventNotifyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

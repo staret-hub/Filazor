@@ -1,7 +1,12 @@
-﻿
+﻿@using Filazor.Core.Data
+@implements IDisposable
+
+@inject FileUploadEventNotifyService FileUploadEventNotifyService
+
+
 <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
 
-<form action="api/upload/fileUpload?currentDirectory=@currentDirectory" method="post" enctype="multipart/form-data" target="dummyframe">
+<form action="api/upload/fileUpload?uploadDirectory=@UploadDirectory" method="post" enctype="multipart/form-data" target="dummyframe">
     <div class="btn-toolbar py-1 px-2 float-md-right" role="toolbar">
 
         @*<button type="button" class="btn btn-light btn-sm mr-1">
@@ -25,11 +30,38 @@
 @code {
 
     [Parameter]
-    public string currentDirectory { get; set; }
+    public string UploadDirectory { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        FileUploadEventNotifyService.FileUploadCompletedEvent += FileUploadEventNotifyService_FileUploadCompletedEvent;
+        Console.WriteLine("OnInitializedAsync");
+
+        return base.OnInitializedAsync();
+    }
+
+    private async void FileUploadEventNotifyService_FileUploadCompletedEvent(object sender, EventArgs args)
+    {
+        Console.WriteLine("CompeletedFileUpload");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        //    Console.WriteLine("OnAfterRenderAsync firstRender");
+        //else
+        //    Console.WriteLine("OnAfterRenderAsync");
+    }
 
 
     private void CompeletedFileUpload()
     {
-        Console.WriteLine("CompeletedFileUpload");
+        //Console.WriteLine("CompeletedFileUpload");
+    }
+
+    public void Dispose()
+    {
+        FileUploadEventNotifyService.FileUploadCompletedEvent -= FileUploadEventNotifyService_FileUploadCompletedEvent;
+        Console.WriteLine("Dispose");
     }
 }
