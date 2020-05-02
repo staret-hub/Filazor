@@ -144,17 +144,17 @@ else
 
         <div class="row">
             <div class="col-2 px-1">
-                <Navigator />
+                <Navigator LastSelectedDirInfo="@lastSelectedDirInfo" />
             </div>
-            <div class="col-6 px-1">
+            <div class="col-7 px-1">
                 <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
             </div>
             <div class="col-3 px-1">
-                <SearchBox />
+                @*<SearchBox />*@
             </div>
-            <div class="col-1 px-1">
+            @*<div class="col-1 px-1">
                 <UploadDownloadControl UploadDirectory="@addressbarCurrentPath" />
-            </div>
+            </div>*@
         </div>
 
         <div class="row" style="height: 600px;">
@@ -277,7 +277,8 @@ else
     }
 
     /// <summary>
-    /// Child Node Double Click EventCallback
+    /// move to selected directory
+    /// using AddressBar / DriveDetailView / FileDetailViewTable
     /// </summary>
     /// <param name="selectedDirInfo">Selected DirectoryInfo</param>
     private void SelectedDirectory(DirectoryInfo selectedDirInfo)

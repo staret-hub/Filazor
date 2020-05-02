@@ -32,17 +32,17 @@
     [Parameter]
     public string UploadDirectory { get; set; }
 
+
     protected override Task OnInitializedAsync()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent += FileUploadEventNotifyService_FileUploadCompletedEvent;
-        Console.WriteLine("OnInitializedAsync");
 
         return base.OnInitializedAsync();
     }
 
     private async void FileUploadEventNotifyService_FileUploadCompletedEvent(object sender, EventArgs args)
     {
-        Console.WriteLine("CompeletedFileUpload");
+        await InvokeAsync(() => { this.StateHasChanged(); });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -53,15 +53,8 @@
         //    Console.WriteLine("OnAfterRenderAsync");
     }
 
-
-    private void CompeletedFileUpload()
-    {
-        //Console.WriteLine("CompeletedFileUpload");
-    }
-
     public void Dispose()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent -= FileUploadEventNotifyService_FileUploadCompletedEvent;
-        Console.WriteLine("Dispose");
     }
 }

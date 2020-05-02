@@ -1,17 +1,19 @@
-﻿<style>
+﻿@using System.IO
+
+<style>
     .material-icons {
-        font-size: 18px;
+        font-size: 16px;
     }
 </style>
 
 <div class="btn-toolbar py-1" role="toolbar">
 
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledBackButton" @onclick="Back">
         <i class="material-icons align-middle">
             arrow_back
         </i>
     </button>
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledForwardButton" @onclick="Forward">
         <i class="material-icons align-middle">
             arrow_forward
         </i>
@@ -21,7 +23,7 @@
                 expand_more
             </i>
         </button>*@
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@isDisabled">
+    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledUpwardButton" @onclick="Upward">
         <i class="material-icons align-middle">
             arrow_upward
         </i>
@@ -30,5 +32,64 @@
 </div>
 
 @code {
-    private bool isDisabled = true;
+
+    private bool disabledBackButton = true;
+    private bool disabledForwardButton = true;
+    private bool disabledUpwardButton = true;
+
+    private DirectoryInfo lastSelectedDirInfo;
+    private Stack<DirectoryInfo> backDirStack = new Stack<DirectoryInfo>();
+    private Stack<DirectoryInfo> forwardDirStack = new Stack<DirectoryInfo>();
+
+
+    [Parameter]
+    public DirectoryInfo LastSelectedDirInfo
+    {
+        get
+        {
+            return lastSelectedDirInfo;
+        }
+        set
+        {
+            if (value == null) return;
+
+            lastSelectedDirInfo = value;
+            backDirStack.Push(value);
+        }
+    }
+
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        disabledBackButton = backDirStack.Count == 0;
+        disabledForwardButton = forwardDirStack.Count == 0;
+        disabledUpwardButton = lastSelectedDirInfo == null;
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private void Back()
+    {
+        //var dirInfo = backDirStack.Pop();
+        //forwardDirStack.Push(dirInfo);
+
+        // need to re-render
+    }
+
+    private void Forward()
+    {
+        //var dirInfo = forwardDirStack.Pop();
+        //backDirStack.Push(dirInfo);
+
+        // need to re-render
+    }
+
+    private void Upward()
+    {
+        // get parents dir
+
+        // need to re-render
+    }
+
 }
