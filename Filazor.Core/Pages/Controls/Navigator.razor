@@ -37,59 +37,119 @@
     private bool disabledForwardButton = true;
     private bool disabledUpwardButton = true;
 
-    private DirectoryInfo lastSelectedDirInfo;
-    private Stack<DirectoryInfo> backDirStack = new Stack<DirectoryInfo>();
-    private Stack<DirectoryInfo> forwardDirStack = new Stack<DirectoryInfo>();
+    private bool isBacking = false;
+    private bool isForwarding = false;
+
+    private string currentDirectoryPath;
+    private Stack<string> backDirStack = new Stack<string>();
+    private Stack<string> forwardDirStack = new Stack<string>();
+
+    [Parameter]
+    public EventCallback<string> BackAndForwardCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<string> UpwardCallback { get; set; }
 
 
     [Parameter]
-    public DirectoryInfo LastSelectedDirInfo
+    public string CurrentDirectoryPath
     {
         get
         {
-            return lastSelectedDirInfo;
+            return currentDirectoryPath;
         }
         set
         {
-            if (value == null) return;
+            if (value == null)
+            {
+                currentDirectoryPath = null;
+                return;
+            }
 
-            lastSelectedDirInfo = value;
-            backDirStack.Push(value);
+            if (currentDirectoryPath != null
+                && currentDirectoryPath == value)
+            {
+                return;
+            }
+
+            currentDirectoryPath = value;
+
+            if (isBacking == false)
+            {
+                //Console.WriteLine("Back Push: {0}", value);
+                backDirStack.Push(value);
+            }
+            else
+            {
+                isBacking = false;
+            }
+
+            if (isForwarding == false)
+            {
+                //Console.WriteLine("Foward Push: {0}", value);
+                forwardDirStack.Push(value);
+            }
+            else
+            {
+                isForwarding = false;
+            }
         }
     }
 
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        disabledBackButton = backDirStack.Count == 0;
-        disabledForwardButton = forwardDirStack.Count == 0;
-        disabledUpwardButton = lastSelectedDirInfo == null;
+        SetButon();
 
         return base.OnAfterRenderAsync(firstRender);
     }
 
-
-    private void Back()
+    private void SetButon()
     {
-        //var dirInfo = backDirStack.Pop();
-        //forwardDirStack.Push(dirInfo);
-
-        // need to re-render
+        disabledBackButton = backDirStack.Count == 0;
+        disabledForwardButton = forwardDirStack.Count == 0;
+        disabledUpwardButton = currentDirectoryPath == null;
     }
 
-    private void Forward()
-    {
-        //var dirInfo = forwardDirStack.Pop();
-        //backDirStack.Push(dirInfo);
 
-        // need to re-render
+    private async void Back()
+    {
+        isBacking = true;
+
+        var path = backDirStack.Pop();
+        forwardDirStack.Push(path);
+
+        await BackAndForwardCallback.InvokeAsync(path);
+
+        SetButon();
     }
 
-    private void Upward()
+    private async void Forward()
     {
-        // get parents dir
+        isForwarding = true;
 
-        // need to re-render
+        var path = forwardDirStack.Pop();
+        backDirStack.Push(path);
+
+        await BackAndForwardCallback.InvokeAsync(path);
+
+        SetButon();
+    }
+
+    private async void Upward()
+    {
+        var dirInfo = new DirectoryInfo(CurrentDirectoryPath);
+
+        if (dirInfo.Parent == null)
+        {
+            await UpwardCallback.InvokeAsync(string.Empty);
+        }
+        else
+        {
+            await UpwardCallback.InvokeAsync(dirInfo.Parent.FullName);
+        }
+
+        SetButon();
     }
 
 }

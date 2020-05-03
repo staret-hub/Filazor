@@ -144,7 +144,7 @@ else
 
         <div class="row">
             <div class="col-2 px-1">
-                <Navigator LastSelectedDirInfo="@lastSelectedDirInfo" />
+                <Navigator CurrentDirectoryPath="@currentFullName" BackAndForwardCallback="BackAndFowardButtonCallback" UpwardCallback="UpwardButtonCallback" />
             </div>
             <div class="col-7 px-1">
                 <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
@@ -177,7 +177,7 @@ else
                                     <FSTreeNode IsDrive=true 
                                                 DriveVolumeLabel=@driveInfo.VolumeLabel
                                                 TargetRootDirectoryInfo=@driveInfo.RootDirectory
-                                                OnClickCallback="@OnClickNodeCallback"/>
+                                                OnClickCallback="@DriveNodeCallback"/>
                                 </li>
                             }
                             </ul>
@@ -208,8 +208,9 @@ else
     private string selectedItem;
     private string isActive;
 
-    private FSTreeNode lastSelectedNode;
-    private DirectoryInfo lastSelectedDirInfo;
+    private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
+    private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
+    private string currentFullName; // for Navigator
 
 
     private string addressbarCurrentPath;
@@ -223,7 +224,7 @@ else
         // set default
         if (driveInfos != null && driveInfos.Length > 0)
         {
-            ExpandHost();
+            UpdateUIForHost();
         }
     }
 
@@ -231,6 +232,13 @@ else
     /// Host node click event
     /// </summary>
     private void SelectedHost()
+    {
+        UpdateUIForHost();
+
+        currentFullName = hostName;
+    }
+
+    private void UpdateUIForHost()
     {
         if (lastSelectedNode != null)
         {
@@ -240,6 +248,7 @@ else
 
         selectedItem = "item-selected";
         addressbarCurrentPath = string.Empty;
+        lastSelectedDirInfo = null;
     }
 
     /// <summary>
@@ -257,10 +266,10 @@ else
     }
 
     /// <summary>
-    /// Child Node Click EventCallback
+    /// Drive Node Click EventCallback
     /// </summary>
     /// <param name="args">Event Node</param>
-    private void OnClickNodeCallback(FSTreeNode args)
+    private void DriveNodeCallback(FSTreeNode args)
     {
         if (lastSelectedNode == null)
         {
@@ -285,6 +294,34 @@ else
     {
         lastSelectedDirInfo = selectedDirInfo;
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
+
+        currentFullName = lastSelectedDirInfo.FullName;
+    }
+
+    private void BackAndFowardButtonCallback(string path)
+    {
+        if (path == hostName)
+        {
+            UpdateUIForHost();
+        }
+        else
+        {
+            lastSelectedDirInfo = new DirectoryInfo(path);
+            addressbarCurrentPath = lastSelectedDirInfo.FullName;
+        }
+    }
+
+    private void UpwardButtonCallback(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            UpdateUIForHost();
+            return;
+        }
+
+        lastSelectedDirInfo = new DirectoryInfo(path);
+        addressbarCurrentPath = lastSelectedDirInfo.FullName;
+        currentFullName = lastSelectedDirInfo.FullName;
     }
 }
 
