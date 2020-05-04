@@ -2,7 +2,7 @@
 
 @using System.IO
 @using Filazor.Core.Data
-@using Filazor.Core.Pages.Controls 
+@using Filazor.Core.Pages.Controls
 
 @inject FileSystemService FSService
 
@@ -25,67 +25,82 @@
     li {
         cursor: pointer;
         /* Prevent text selection */
-        user-select: none;          /* standard syntax */
-        -webkit-user-select: none;  /* webkit (safari, chrome) browsers */
-        -moz-user-select: none;     /* mozilla browsers */
-        -khtml-user-select: none;   /* webkit (konqueror) browsers */
-        -ms-user-select: none;      /* IE10+ */
+        user-select: none; /* standard syntax */
+        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+        -moz-user-select: none; /* mozilla browsers */
+        -khtml-user-select: none; /* webkit (konqueror) browsers */
+        -ms-user-select: none; /* IE10+ */
     }
 
-    li > span:hover {
-        background-color: aliceblue;
-        outline: 1px solid;
-        outline-color: deepskyblue;
-    }
+        li > span:hover {
+            background-color: aliceblue;
+            outline: 1px solid;
+            outline-color: deepskyblue;
+        }
 
-    li > span {
-        padding-left: 5px;
-    }
-    li li > span { 
-        padding-left: 15px; 
-    }
-    li li li > span {
-        padding-left: 35px;
-    }
-    li li li li > span {
-        padding-left: 50px;
-    }
-    li li li li li > span {
-        padding-left: 65px;
-    }
-    li li li li li li > span {
-        padding-left: 80px;
-    }
-    li li li li li li li > span {
-        padding-left: 95px;
-    }
-    li li li li li li li li > span {
-        padding-left: 110px;
-    }
-    li li li li li li li li li > span {
-        padding-left: 125px;
-    }
-    li li li li li li li li li li > span {
-        padding-left: 140px;
-    }
-    li li li li li li li li li li li > span {
-        padding-left: 155px;
-    }
-    li li li li li li li li li li li li > span {
-        padding-left: 170px;
-    }
-    li li li li li li li li li li li li li > span {
-        padding-left: 185px;
-    }
-    li li li li li li li li li li li li li li > span {
-        padding-left: 200px;
-    }
-    li li li li li li li li li li li li li li li > span {
-        padding-left: 215px;
-    }
-    li li li li li li li li li li li li li li li li > span {
-        padding-left: 230px;
-    }
+        li > span {
+            padding-left: 5px;
+        }
+
+        li li > span {
+            padding-left: 15px;
+        }
+
+        li li li > span {
+            padding-left: 35px;
+        }
+
+        li li li li > span {
+            padding-left: 50px;
+        }
+
+        li li li li li > span {
+            padding-left: 65px;
+        }
+
+        li li li li li li > span {
+            padding-left: 80px;
+        }
+
+        li li li li li li li > span {
+            padding-left: 95px;
+        }
+
+        li li li li li li li li > span {
+            padding-left: 110px;
+        }
+
+        li li li li li li li li li > span {
+            padding-left: 125px;
+        }
+
+        li li li li li li li li li li > span {
+            padding-left: 140px;
+        }
+
+        li li li li li li li li li li li > span {
+            padding-left: 155px;
+        }
+
+        li li li li li li li li li li li li > span {
+            padding-left: 170px;
+        }
+
+        li li li li li li li li li li li li li > span {
+            padding-left: 185px;
+        }
+
+        li li li li li li li li li li li li li li > span {
+            padding-left: 200px;
+        }
+
+        li li li li li li li li li li li li li li li > span {
+            padding-left: 215px;
+        }
+
+        li li li li li li li li li li li li li li li li > span {
+            padding-left: 230px;
+        }
 
     /* Style the caret/arrow */
     .caret {
@@ -93,13 +108,13 @@
         user-select: none; /* Prevent text selection */
     }
 
-    /* Create the caret/arrow with a unicode, and style it */
-    .caret::before {
-        content: "\276F";
-        color: darkgray;
-        display: inline-block;
-        margin-right: 3px;
-    }
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\276F";
+            color: darkgray;
+            display: inline-block;
+            margin-right: 3px;
+        }
 
     /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
     .caret-down::before {
@@ -126,7 +141,6 @@
         align-items: center;
         border: 1px solid lightgrey;
     }
-
 </style>
 
 @if (string.IsNullOrEmpty(hostName))
@@ -153,16 +167,16 @@ else
                 @*<SearchBox />*@
             </div>
             @*<div class="col-1 px-1">
-                <UploadDownloadControl UploadDirectory="@addressbarCurrentPath" />
-            </div>*@
+                    <UploadDownloadControl UploadDirectory="@addressbarCurrentPath" />
+                </div>*@
         </div>
 
         <div class="row" style="height: 600px;">
             <div class="col-3 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
                 <ul id="FSTreeView">
                     <li>
-                        <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost" >
-                            <span class="caret @caretDirection" @onclick="ExpandHost"/>
+                        <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost">
+                            <span class="caret @caretDirection" @onclick="ExpandHost" />
                             <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
                                 desktop_windows
                             </i>
@@ -171,15 +185,15 @@ else
                         @if (driveInfos != null)
                         {
                             <ul class="nested @isActive">
-                            @foreach (var driveInfo in driveInfos)
-                            {
-                                <li>
-                                    <FSTreeNode IsDrive=true 
-                                                DriveVolumeLabel=@driveInfo.VolumeLabel
-                                                TargetRootDirectoryInfo=@driveInfo.RootDirectory
-                                                OnClickCallback="@DriveNodeCallback"/>
-                                </li>
-                            }
+                                @foreach (var driveInfo in driveInfos)
+                                {
+                                    <li>
+                                        <FSTreeNode IsDrive=true
+                                                    DriveVolumeLabel=@driveInfo.VolumeLabel
+                                                    TargetRootDirectoryInfo=@driveInfo.RootDirectory
+                                                    OnClickCallback="@DriveNodeCallback" />
+                                    </li>
+                                }
                             </ul>
                         }
                     </li>
