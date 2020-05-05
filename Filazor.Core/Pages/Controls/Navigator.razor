@@ -11,12 +11,12 @@
         color: gray;
         font-size: 16px;
         border: none;
-        cursor: pointer;
     }
 
     /* Dropdown button on hover & focus */
-    .dropbtn:hover, .dropbtn:focus {
+    .dropbtn:hover:enabled, .dropbtn:focus:enabled {
         background-color: silver;
+        cursor: pointer;
     }
 
     /* The container div - needed to position the dropdown content */
@@ -67,15 +67,16 @@
         </i>
     </button>
     <div class="dropdown align-self-center mr-1" @onfocusout="OnFocusOutDropdown">
-        <button @onclick="RecentLocations" class="dropbtn">
+        <button @onclick="RecentLocations" class="dropbtn" disabled="@disabledRecentButton">
             <i class="material-icons align-middle">
                 expand_more
             </i>
         </button>
         <div id="recentLocations" class="dropdown-content @recentLocationShow">
-            <a href="#">TEST 1</a>
-            <a href="#">TEST 2</a>
-            <a href="#">TEST 3</a>
+            @foreach (var dirInfo in recentDirInfoList)
+            {
+                <a href="#">@dirInfo.Name</a>
+            }
         </div>
     </div>
     <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledUpwardButton" @onclick="Upward">
@@ -91,13 +92,16 @@
     private bool disabledBackButton = true;
     private bool disabledForwardButton = true;
     private bool disabledUpwardButton = true;
+    private bool disabledRecentButton = true;
 
     private bool isBacking = false;
     private bool isForwarding = false;
 
+    private string previousDirectoryPath;
     private string currentDirectoryPath;
     private Stack<string> backDirStack = new Stack<string>();
     private Stack<string> forwardDirStack = new Stack<string>();
+    private List<DirectoryInfo> recentDirInfoList = new List<DirectoryInfo>();
 
     private string recentLocationShow = "";
 
@@ -107,6 +111,52 @@
     [Parameter]
     public EventCallback<string> UpwardCallback { get; set; }
 
+    [Parameter]
+    public string SelectedDirectory { get; set; }
+
+
+    // Before parameters are set
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        Console.WriteLine("SetParametersAsync {0}", SelectedDirectory);
+
+        return base.SetParametersAsync(parameters);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Console.WriteLine("OnInitializedAsync {0}", SelectedDirectory);
+
+        return base.OnInitializedAsync();
+    }
+
+    // After parameters are set
+    protected override Task OnParametersSetAsync()
+    {
+        Console.WriteLine("OnParametersSetAsync {0}", SelectedDirectory);
+
+        return base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("OnAfterRenderAsync firstRender {0}", SelectedDirectory);
+        }
+        else
+        {
+            Console.WriteLine("OnAfterRenderAsync");
+        }
+    }
+
+
+
+
+
+
+
+    #region Depreciated Codes
 
     [Parameter]
     public string CurrentDirectoryPath
@@ -119,46 +169,41 @@
         {
             if (value == null)
             {
+                Console.WriteLine("currentDirectory set value: null");
                 currentDirectoryPath = null;
                 return;
             }
 
-            if (currentDirectoryPath != null
-                && currentDirectoryPath == value)
-            {
-                return;
-            }
+            Console.WriteLine("currentDirectory set value: {0}", value);
 
-            currentDirectoryPath = value;
+            //if (currentDirectoryPath != null
+            //    && currentDirectoryPath == value)
+            //{
+            //    return;
+            //}
 
-            if (isBacking == false)
-            {
-                //Console.WriteLine("Back Push: {0}", value);
-                backDirStack.Push(value);
-            }
-            else
-            {
-                isBacking = false;
-            }
+            //currentDirectoryPath = value;
 
-            if (isForwarding == false)
-            {
-                //Console.WriteLine("Foward Push: {0}", value);
-                forwardDirStack.Push(value);
-            }
-            else
-            {
-                isForwarding = false;
-            }
+            //if (isBacking == false)
+            //{
+            //    //Console.WriteLine("Back Push: {0}", value);
+            //    backDirStack.Push(value);
+            //}
+            //else
+            //{
+            //    isBacking = false;
+            //}
+
+            //if (isForwarding == false)
+            //{
+            //    //Console.WriteLine("Foward Push: {0}", value);
+            //    forwardDirStack.Push(value);
+            //}
+            //else
+            //{
+            //    isForwarding = false;
+            //}
         }
-    }
-
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        SetButon();
-
-        return base.OnAfterRenderAsync(firstRender);
     }
 
     private void SetButon()
@@ -166,6 +211,7 @@
         disabledBackButton = backDirStack.Count == 0;
         disabledForwardButton = forwardDirStack.Count == 0;
         disabledUpwardButton = currentDirectoryPath == null;
+        disabledRecentButton = recentDirInfoList.Count == 0;
     }
 
 
@@ -219,4 +265,6 @@
         Console.WriteLine("OnFocusOutDropdown");
         recentLocationShow = "";
     }
+
+    #endregion
 }
