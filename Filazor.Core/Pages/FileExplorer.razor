@@ -158,7 +158,7 @@ else
 
         <div class="row">
             <div class="col-2 px-1">
-                <Navigator />
+                <Navigator SelectedDirectory="@addressbarCurrentPath" />
             </div>
             <div class="col-7 px-1">
                 <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
@@ -224,7 +224,6 @@ else
 
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
     private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
-    private string currentFullName; // for Navigator
 
 
     private string addressbarCurrentPath;
@@ -248,8 +247,6 @@ else
     private void SelectedHost()
     {
         UpdateUIForHost();
-
-        currentFullName = hostName;
     }
 
     private void UpdateUIForHost()
@@ -308,8 +305,6 @@ else
     {
         lastSelectedDirInfo = selectedDirInfo;
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
-
-        currentFullName = lastSelectedDirInfo.FullName;
     }
 
     private void BackAndFowardButtonCallback(string path)
@@ -335,7 +330,6 @@ else
 
         lastSelectedDirInfo = new DirectoryInfo(path);
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
-        currentFullName = lastSelectedDirInfo.FullName;
     }
 }
 
