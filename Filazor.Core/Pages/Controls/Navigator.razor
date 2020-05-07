@@ -38,7 +38,8 @@
     /* Links inside the dropdown */
     .dropdown-content a {
         color: black;
-        padding: 12px 16px;
+        font-size: 12px;
+        padding: 5px;
         text-decoration: none;
         display: block;
     }
@@ -73,9 +74,17 @@
             </i>
         </button>
         <div id="recentLocations" class="dropdown-content @recentLocationShow">
-            @foreach (var dirInfo in recentDirInfoList)
+            @foreach (var path in selectedDirectoryList)
             {
-                <a href="#">@dirInfo.Name</a>
+                if (string.IsNullOrEmpty(path))
+                {
+                    <a href="" @onclick="ATagClickTest" @onclick:preventDefault>@HostName</a>
+                }
+                else
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    <a href="#">@directoryInfo.Name</a>
+                }
             }
         </div>
     </div>
@@ -101,7 +110,8 @@
     private string currentDirectoryPath;
     private Stack<string> backDirStack = new Stack<string>();
     private Stack<string> forwardDirStack = new Stack<string>();
-    private List<DirectoryInfo> recentDirInfoList = new List<DirectoryInfo>();
+
+    private List<string> selectedDirectoryList = new List<string>();
 
     private string recentLocationShow = "";
 
@@ -112,28 +122,42 @@
     public EventCallback<string> UpwardCallback { get; set; }
 
     [Parameter]
+    public string HostName { get; set; }
+
+    [Parameter]
     public string SelectedDirectory { get; set; }
+
+    private string previousDirectory { get; set; }
 
 
     // Before parameters are set
     public override Task SetParametersAsync(ParameterView parameters)
     {
-        Console.WriteLine("SetParametersAsync {0}", SelectedDirectory);
+        DebugPrint($"SetParametersAsync {SelectedDirectory}");
+
+        previousDirectory = SelectedDirectory;
 
         return base.SetParametersAsync(parameters);
     }
 
     protected override Task OnInitializedAsync()
     {
-        Console.WriteLine("OnInitializedAsync {0}", SelectedDirectory);
+        DebugPrint($"OnInitializedAsync {SelectedDirectory}");
 
         return base.OnInitializedAsync();
     }
 
-    // After parameters are set
     protected override Task OnParametersSetAsync()
     {
-        Console.WriteLine("OnParametersSetAsync {0}", SelectedDirectory);
+        DebugPrint($"OnParametersSetAsync {SelectedDirectory}");
+
+        if (previousDirectory != SelectedDirectory)
+        {
+            selectedDirectoryList.Insert(0, SelectedDirectory);
+            DebugPrint($"Added {SelectedDirectory}");
+        }
+
+        SetButon();
 
         return base.OnParametersSetAsync();
     }
@@ -142,17 +166,47 @@
     {
         if (firstRender)
         {
-            Console.WriteLine("OnAfterRenderAsync firstRender {0}", SelectedDirectory);
+            DebugPrint($"OnAfterRenderAsync firstRender {SelectedDirectory}");
         }
         else
         {
-            Console.WriteLine("OnAfterRenderAsync");
+            DebugPrint($"OnAfterRenderAsync {SelectedDirectory}");
         }
     }
 
+    private void SetButon()
+    {
+        disabledBackButton = backDirStack.Count == 0;
+        disabledForwardButton = forwardDirStack.Count == 0;
+        disabledUpwardButton = currentDirectoryPath == null;
+
+        DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
+        disabledRecentButton = selectedDirectoryList.Count <= 1;
+    }
+
+    private async void RecentLocations()
+    {
+        recentLocationShow = "show";
+    }
+
+    private async void OnFocusOutDropdown()
+    {
+        //Console.WriteLine("OnFocusOutDropdown");
+        recentLocationShow = "";
+    }
+
+    private void ATagClickTest()
+    {
+        DebugPrint("ATagClickTest");
+    }
 
 
-
+    private void DebugPrint(string message)
+    {
+#if DEBUG
+        Console.WriteLine("{0} >>> {1}", DateTime.Now.ToString("HH:mm:ss.fff"), message);
+#endif
+    }
 
 
 
@@ -209,14 +263,6 @@
         }
     }
 
-    private void SetButon()
-    {
-        disabledBackButton = backDirStack.Count == 0;
-        disabledForwardButton = forwardDirStack.Count == 0;
-        disabledUpwardButton = currentDirectoryPath == null;
-        disabledRecentButton = recentDirInfoList.Count == 0;
-    }
-
 
     private async void Back()
     {
@@ -256,17 +302,6 @@
         }
 
         SetButon();
-    }
-
-    private async void RecentLocations()
-    {
-        recentLocationShow = "show";
-    }
-
-    private async void OnFocusOutDropdown()
-    {
-        Console.WriteLine("OnFocusOutDropdown");
-        recentLocationShow = "";
     }
 
     #endregion

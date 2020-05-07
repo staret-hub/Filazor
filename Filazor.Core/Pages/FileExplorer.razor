@@ -145,7 +145,7 @@
 
 @if (string.IsNullOrEmpty(hostName))
 {
-    <p><em>Can not find host..</em></p>
+    <Loader />
 }
 else
 {
@@ -158,7 +158,7 @@ else
 
         <div class="row">
             <div class="col-2 px-1">
-                <Navigator SelectedDirectory="@addressbarCurrentPath" />
+                <Navigator HostName="@hostName" SelectedDirectory="@addressbarCurrentPath" />
             </div>
             <div class="col-7 px-1">
                 <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
