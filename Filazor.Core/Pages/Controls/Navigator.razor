@@ -67,8 +67,8 @@
             arrow_forward
         </i>
     </button>
-    <div class="dropdown align-self-center mr-1" @onfocusout="OnFocusOutDropdown">
-        <button @onclick="RecentLocations" class="dropbtn" disabled="@disabledRecentButton">
+    <div class="dropdown align-self-center mr-1">
+        <button @onclick="ShowRecentContent" class="dropbtn" disabled="@disabledRecentButton">
             <i class="material-icons align-middle">
                 expand_more
             </i>
@@ -76,15 +76,17 @@
         <div id="recentLocations" class="dropdown-content @recentLocationShow">
             @foreach (var path in selectedDirectoryList)
             {
+                string recentPath = null;
                 if (string.IsNullOrEmpty(path))
                 {
-                    <a href="" @onclick="ATagClickTest" @onclick:preventDefault>@HostName</a>
+                    recentPath = HostName;
                 }
                 else
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                    <a href="#">@directoryInfo.Name</a>
+                    recentPath = @directoryInfo.Name;
                 }
+                <a href="" @onclick="e => { MoveToRecent(path); }" @onclick:preventDefault>@recentPath</a>
             }
         </div>
     </div>
@@ -103,6 +105,7 @@
     private bool disabledUpwardButton = true;
     private bool disabledRecentButton = true;
 
+    private bool isRecent = false;
     private bool isBacking = false;
     private bool isForwarding = false;
 
@@ -113,7 +116,7 @@
 
     private List<string> selectedDirectoryList = new List<string>();
 
-    private string recentLocationShow = "";
+    private string recentLocationShow = null;
 
     [Parameter]
     public EventCallback<string> BackAndForwardCallback { get; set; }
@@ -122,27 +125,26 @@
     public EventCallback<string> UpwardCallback { get; set; }
 
     [Parameter]
+    public EventCallback<string> MoveToRecentCallback { get; set; }
+
+    [Parameter]
     public string HostName { get; set; }
 
     [Parameter]
     public string SelectedDirectory { get; set; }
 
-    private string previousDirectory { get; set; }
-
 
     // Before parameters are set
     public override Task SetParametersAsync(ParameterView parameters)
     {
-        DebugPrint($"SetParametersAsync {SelectedDirectory}");
-
-        previousDirectory = SelectedDirectory;
+        //DebugPrint($"SetParametersAsync {SelectedDirectory}");
 
         return base.SetParametersAsync(parameters);
     }
 
     protected override Task OnInitializedAsync()
     {
-        DebugPrint($"OnInitializedAsync {SelectedDirectory}");
+        //DebugPrint($"OnInitializedAsync {SelectedDirectory}");
 
         return base.OnInitializedAsync();
     }
@@ -151,7 +153,12 @@
     {
         DebugPrint($"OnParametersSetAsync {SelectedDirectory}");
 
-        if (previousDirectory != SelectedDirectory)
+        if (isRecent)
+        {
+            isRecent = false;
+        }
+        else if (selectedDirectoryList.Count == 0
+            || selectedDirectoryList[0] != SelectedDirectory)
         {
             selectedDirectoryList.Insert(0, SelectedDirectory);
             DebugPrint($"Added {SelectedDirectory}");
@@ -184,20 +191,28 @@
         disabledRecentButton = selectedDirectoryList.Count <= 1;
     }
 
-    private async void RecentLocations()
+    private async void ShowRecentContent()
     {
-        recentLocationShow = "show";
+        recentLocationShow = recentLocationShow == null ? "show" : null;
     }
 
     private async void OnFocusOutDropdown()
     {
-        //Console.WriteLine("OnFocusOutDropdown");
-        recentLocationShow = "";
+        Console.WriteLine("OnFocusOutDropdown");
+        recentLocationShow = null;
     }
 
-    private void ATagClickTest()
+    /// <summary>
+    /// Move to selected recent node
+    /// </summary>
+    /// <param name="path">selected node Path</param>
+    private async void MoveToRecent(string path)
     {
-        DebugPrint("ATagClickTest");
+        DebugPrint($"MoveToRecent => {path}");
+        isRecent = true;
+        await MoveToRecentCallback.InvokeAsync(path);
+
+        ShowRecentContent();
     }
 
 
