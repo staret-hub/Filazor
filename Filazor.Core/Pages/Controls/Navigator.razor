@@ -109,12 +109,8 @@
     private bool isBacking = false;
     private bool isForwarding = false;
 
-    private string previousDirectoryPath;
-    private string currentDirectoryPath;
-    private Stack<string> backDirStack = new Stack<string>();
-    private Stack<string> forwardDirStack = new Stack<string>();
-
     private List<string> selectedDirectoryList = new List<string>();
+    private int selectedDirectoryIndex;
 
     private string recentLocationShow = null;
 
@@ -132,6 +128,12 @@
 
     [Parameter]
     public string SelectedDirectory { get; set; }
+
+
+    /// <summary>
+    /// will be depreciated
+    /// </summary>
+    private string currentDirectoryPath;
 
 
     // Before parameters are set
@@ -157,13 +159,19 @@
         {
             isRecent = false;
         }
+        else if (isBacking)
+        {
+            isBacking = true;
+        }
         else if (selectedDirectoryList.Count == 0
             || selectedDirectoryList[0] != SelectedDirectory)
         {
             selectedDirectoryList.Insert(0, SelectedDirectory);
+            selectedDirectoryIndex = 0;
             DebugPrint($"Added {SelectedDirectory}");
         }
 
+        DebugPrint($"Selected Index {selectedDirectoryIndex}");
         SetButon();
 
         return base.OnParametersSetAsync();
@@ -183,8 +191,8 @@
 
     private void SetButon()
     {
-        disabledBackButton = backDirStack.Count == 0;
-        disabledForwardButton = forwardDirStack.Count == 0;
+        disabledBackButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex + 1 == selectedDirectoryList.Count;
+        disabledForwardButton = true; // forwardDirStack.Count == 0;
         disabledUpwardButton = currentDirectoryPath == null;
 
         DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
@@ -215,6 +223,15 @@
         ShowRecentContent();
     }
 
+    private async void Back()
+    {
+        isBacking = true;
+
+        selectedDirectoryIndex = selectedDirectoryIndex + 1;
+        string path = selectedDirectoryList[selectedDirectoryIndex];
+
+        await BackAndForwardCallback.InvokeAsync(path);
+    }
 
     private void DebugPrint(string message)
     {
@@ -278,27 +295,14 @@
         }
     }
 
-
-    private async void Back()
-    {
-        isBacking = true;
-
-        var path = backDirStack.Pop();
-        forwardDirStack.Push(path);
-
-        await BackAndForwardCallback.InvokeAsync(path);
-
-        SetButon();
-    }
-
     private async void Forward()
     {
         isForwarding = true;
 
-        var path = forwardDirStack.Pop();
-        backDirStack.Push(path);
+        //var path = forwardDirStack.Pop();
+        //backDirStack.Push(path);
 
-        await BackAndForwardCallback.InvokeAsync(path);
+        //await BackAndForwardCallback.InvokeAsync(path);
 
         SetButon();
     }

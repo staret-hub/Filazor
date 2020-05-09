@@ -160,6 +160,7 @@ else
             <div class="col-2 px-1">
                 <Navigator HostName="@hostName" 
                            SelectedDirectory="@addressbarCurrentPath"
+                           BackAndForwardCallback="BackAndFowardButtonCallback"
                            MoveToRecentCallback="MoveToRecentCallback" />
             </div>
             <div class="col-7 px-1">
@@ -311,7 +312,7 @@ else
 
     private void BackAndFowardButtonCallback(string path)
     {
-        if (path == hostName)
+        if (string.IsNullOrEmpty(path))
         {
             UpdateUIForHost();
         }
