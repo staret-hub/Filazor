@@ -36,7 +36,7 @@
     }
 
     /* Links inside the dropdown */
-    .dropdown-content a {
+    .dropdown-content li {
         color: black;
         font-size: 12px;
         padding: 5px;
@@ -68,26 +68,31 @@
         </i>
     </button>
     <div class="dropdown align-self-center mr-1">
-        <button @onclick="ShowRecentContent" class="dropbtn" disabled="@disabledRecentButton">
+        <button @onclick="ShowRecentContent" class="dropbtn" disabled="@disabledRecentButton" @onfocusout="ShowRecentContent">
             <i class="material-icons align-middle">
                 expand_more
             </i>
         </button>
-        <div id="recentLocations" class="dropdown-content @recentLocationShow">
-            @foreach (var path in selectedDirectoryList)
-            {
-                string recentPath = null;
-                if (string.IsNullOrEmpty(path))
+        <div class="dropdown-content @recentLocationShow">
+            <ul>
+                @foreach (var path in selectedDirectoryList)
                 {
-                    recentPath = HostName;
+                    string recentPath = null;
+                    if (string.IsNullOrEmpty(path))
+                    {
+                        recentPath = HostName;
+                    }
+                    else
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                        recentPath = @directoryInfo.Name;
+                    }
+                    @*<a href="" @onclick="e => { MoveToRecent(path); }" @onclick:preventDefault>@recentPath</a>*@
+                    <li>
+                        @recentPath
+                    </li>
                 }
-                else
-                {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                    recentPath = @directoryInfo.Name;
-                }
-                <a href="" @onclick="e => { MoveToRecent(path); }" @onclick:preventDefault>@recentPath</a>
-            }
+            </ul>
         </div>
     </div>
     <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledUpwardButton" @onclick="Upward">
@@ -208,12 +213,6 @@
         recentLocationShow = recentLocationShow == null ? "show" : null;
     }
 
-    private async void OnFocusOutDropdown()
-    {
-        Console.WriteLine("OnFocusOutDropdown");
-        recentLocationShow = null;
-    }
-
     /// <summary>
     /// Move to selected recent node
     /// </summary>
@@ -231,7 +230,7 @@
     {
         isBacking = true;
         selectedDirectoryIndex = selectedDirectoryIndex + 1;
-        
+
         await BackAndForwardCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
     }
 
