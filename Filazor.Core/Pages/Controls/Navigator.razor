@@ -161,7 +161,11 @@
         }
         else if (isBacking)
         {
-            isBacking = true;
+            isBacking = false;
+        }
+        else if (isForwarding)
+        {
+            isForwarding = false;
         }
         else if (selectedDirectoryList.Count == 0
             || selectedDirectoryList[0] != SelectedDirectory)
@@ -192,7 +196,7 @@
     private void SetButon()
     {
         disabledBackButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex + 1 == selectedDirectoryList.Count;
-        disabledForwardButton = true; // forwardDirStack.Count == 0;
+        disabledForwardButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex == 0;
         disabledUpwardButton = currentDirectoryPath == null;
 
         DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
@@ -226,11 +230,17 @@
     private async void Back()
     {
         isBacking = true;
-
         selectedDirectoryIndex = selectedDirectoryIndex + 1;
-        string path = selectedDirectoryList[selectedDirectoryIndex];
+        
+        await BackAndForwardCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
+    }
 
-        await BackAndForwardCallback.InvokeAsync(path);
+    private async void Forward()
+    {
+        isForwarding = true;
+        selectedDirectoryIndex = selectedDirectoryIndex - 1;
+
+        await BackAndForwardCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
     }
 
     private void DebugPrint(string message)
@@ -293,18 +303,6 @@
             //    isForwarding = false;
             //}
         }
-    }
-
-    private async void Forward()
-    {
-        isForwarding = true;
-
-        //var path = forwardDirStack.Pop();
-        //backDirStack.Push(path);
-
-        //await BackAndForwardCallback.InvokeAsync(path);
-
-        SetButon();
     }
 
     private async void Upward()
