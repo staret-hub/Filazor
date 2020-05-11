@@ -1,4 +1,5 @@
 ﻿@using System.IO
+@inject IJSRuntime JSRuntime
 
 <style>
     .material-icons {
@@ -8,9 +9,13 @@
     /* Dropdown Button */
     .dropbtn {
         background-color: transparent;
-        color: gray;
+        color: black;
         font-size: 16px;
         border: none;
+    }
+
+    .dropbtn:disabled {
+        color: silver;
     }
 
     /* Dropdown button on hover & focus */
@@ -45,8 +50,8 @@
     }
 
     /* Change color of dropdown links on hover */
-    .dropdown-content a:hover {
-        background-color: #ddd
+    .dropdown-content li:hover {
+        background-color: lightskyblue;
     }
 
     /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
@@ -68,13 +73,13 @@
         </i>
     </button>
     <div class="dropdown align-self-center mr-1">
-        <button @onclick="ShowRecentContent" class="dropbtn" disabled="@disabledRecentButton" @onfocusout="ShowRecentContent">
+        <button @onclick="ShowRecentContent" class="dropbtn" disabled="@disabledRecentButton">
             <i class="material-icons align-middle">
                 expand_more
             </i>
         </button>
-        <div class="dropdown-content @recentLocationShow">
-            <ul>
+        <div id="recentLocations" class="dropdown-content @recentLocationShow" tabindex="1" @onfocusout="CloseRecentContent">
+            <ul class="p-1">
                 @foreach (var path in selectedDirectoryList)
                 {
                     string recentPath = null;
@@ -87,8 +92,8 @@
                         DirectoryInfo directoryInfo = new DirectoryInfo(path);
                         recentPath = @directoryInfo.Name;
                     }
-                    @*<a href="" @onclick="e => { MoveToRecent(path); }" @onclick:preventDefault>@recentPath</a>*@
-                    <li>
+
+                    <li @onclick="e => { MoveToRecent(path); }">
                         @recentPath
                     </li>
                 }
@@ -113,6 +118,8 @@
     private bool isRecent = false;
     private bool isBacking = false;
     private bool isForwarding = false;
+
+    private bool stopPropagation = false;
 
     private List<string> selectedDirectoryList = new List<string>();
     private int selectedDirectoryIndex;
@@ -196,6 +203,11 @@
         {
             DebugPrint($"OnAfterRenderAsync {SelectedDirectory}");
         }
+
+        if (recentLocationShow != null)
+        {
+            await JSRuntime.InvokeVoidAsync("commonFunctions.focusElement", "recentLocations");
+        }
     }
 
     private void SetButon()
@@ -208,9 +220,14 @@
         disabledRecentButton = selectedDirectoryList.Count <= 1;
     }
 
-    private async void ShowRecentContent()
+    private void ShowRecentContent()
     {
-        recentLocationShow = recentLocationShow == null ? "show" : null;
+        recentLocationShow = "show";
+    }
+
+    private void CloseRecentContent()
+    {
+        recentLocationShow = null;
     }
 
     /// <summary>
@@ -219,11 +236,10 @@
     /// <param name="path">selected node Path</param>
     private async void MoveToRecent(string path)
     {
-        DebugPrint($"MoveToRecent => {path}");
         isRecent = true;
-        await MoveToRecentCallback.InvokeAsync(path);
+        recentLocationShow = null;
 
-        ShowRecentContent();
+        await MoveToRecentCallback.InvokeAsync(path);
     }
 
     private async void Back()
