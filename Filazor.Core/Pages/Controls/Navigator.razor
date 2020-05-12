@@ -54,9 +54,17 @@
         background-color: lightskyblue;
     }
 
+    .hidden-icons li:hover {
+        color: red;
+    }
+
     /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
     .show {
         display: block;
+    }
+
+    .selected-recent {
+        background-color: lightskyblue;
     }
 </style>
 
@@ -80,8 +88,10 @@
         </button>
         <div id="recentLocations" class="dropdown-content @recentLocationShow" tabindex="1" @onfocusout="CloseRecentContent">
             <ul class="p-1">
-                @foreach (var path in selectedDirectoryList)
+                @for (int i = 0; i < selectedDirectoryList.Count; i++)
                 {
+                    string path = selectedDirectoryList[i];
+
                     string recentPath = null;
                     if (string.IsNullOrEmpty(path))
                     {
@@ -93,9 +103,20 @@
                         recentPath = @directoryInfo.Name;
                     }
 
-                    <li @onclick="e => { MoveToRecent(path); }">
-                        @recentPath
-                    </li>
+                    @if (i == selectedDirectoryIndex)
+                    {
+                        <li class="selected-recent align-middle" @onclick="e => { MoveToRecent(path); }">
+                            <i class="material-icons align-middle">check</i>
+                            @recentPath
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="align-middle" @onclick="e => { MoveToRecent(path); }">
+                            <i class="material-icons hidden-icons align-middle">arrow_back</i>
+                            @recentPath
+                        </li>
+                    }
                 }
             </ul>
         </div>
@@ -165,7 +186,7 @@
 
     protected override Task OnParametersSetAsync()
     {
-        DebugPrint($"OnParametersSetAsync {SelectedDirectory}");
+        //DebugPrint($"OnParametersSetAsync {SelectedDirectory}");
 
         if (isRecent)
         {
@@ -238,6 +259,7 @@
     {
         isRecent = true;
         recentLocationShow = null;
+        selectedDirectoryIndex = selectedDirectoryList.IndexOf(path);
 
         await MoveToRecentCallback.InvokeAsync(path);
     }
