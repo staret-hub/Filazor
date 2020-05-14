@@ -160,8 +160,7 @@ else
             <div class="col-2 px-1">
                 <Navigator HostName="@hostName" 
                            SelectedDirectory="@addressbarCurrentPath"
-                           BackAndForwardCallback="BackAndFowardButtonCallback"
-                           MoveToRecentCallback="MoveToRecentCallback" />
+                           SelectedCallback="MoveTo" />
             </div>
             <div class="col-7 px-1">
                 <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="SelectedDirectory" />
@@ -310,7 +309,7 @@ else
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
     }
 
-    private void BackAndFowardButtonCallback(string path)
+    private void MoveTo(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -323,28 +322,5 @@ else
         }
     }
 
-    private void UpwardButtonCallback(string path)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            UpdateUIForHost();
-            return;
-        }
-
-        lastSelectedDirInfo = new DirectoryInfo(path);
-        addressbarCurrentPath = lastSelectedDirInfo.FullName;
-    }
-
-    private void MoveToRecentCallback(string path)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            UpdateUIForHost();
-            return;
-        }
-
-        lastSelectedDirInfo = new DirectoryInfo(path);
-        addressbarCurrentPath = lastSelectedDirInfo.FullName;
-    }
 }
 

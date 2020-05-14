@@ -144,25 +144,13 @@
     private string recentLocationShow = null;
 
     [Parameter]
-    public EventCallback<string> BackAndForwardCallback { get; set; }
-
-    [Parameter]
-    public EventCallback<string> UpwardCallback { get; set; }
-
-    [Parameter]
-    public EventCallback<string> MoveToRecentCallback { get; set; }
+    public EventCallback<string> SelectedCallback { get; set; }
 
     [Parameter]
     public string HostName { get; set; }
 
     [Parameter]
     public string SelectedDirectory { get; set; }
-
-
-    /// <summary>
-    /// will be depreciated
-    /// </summary>
-    private string currentDirectoryPath;
 
 
     // Before parameters are set
@@ -201,10 +189,10 @@
         {
             selectedDirectoryList.Insert(0, SelectedDirectory);
             selectedDirectoryIndex = 0;
-            DebugPrint($"Added {SelectedDirectory}");
+            //DebugPrint($"Added {SelectedDirectory}");
         }
 
-        DebugPrint($"Selected Index {selectedDirectoryIndex}");
+        //DebugPrint($"Selected Index {selectedDirectoryIndex}");
         SetButon();
 
         return base.OnParametersSetAsync();
@@ -214,11 +202,7 @@
     {
         if (firstRender)
         {
-            DebugPrint($"OnAfterRenderAsync firstRender {SelectedDirectory}");
-        }
-        else
-        {
-            DebugPrint($"OnAfterRenderAsync {SelectedDirectory}");
+            //DebugPrint($"OnAfterRenderAsync firstRender {SelectedDirectory}");
         }
 
         if (recentLocationShow != null)
@@ -229,11 +213,11 @@
 
     private void SetButon()
     {
+        DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
+        DebugPrint($"selectedDirectoryList[selectedDirectoryIndex] : {selectedDirectoryList[selectedDirectoryIndex]}");
         disabledBackButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex + 1 == selectedDirectoryList.Count;
         disabledForwardButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex == 0;
-        disabledUpwardButton = currentDirectoryPath == null;
-
-        DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
+        disabledUpwardButton = selectedDirectoryList.Count <= 1 | string.IsNullOrEmpty(selectedDirectoryList[selectedDirectoryIndex]);
         disabledRecentButton = selectedDirectoryList.Count <= 1;
     }
 
@@ -257,7 +241,7 @@
         recentLocationShow = null;
         selectedDirectoryIndex = idx;
 
-        await MoveToRecentCallback.InvokeAsync(selectedDirectoryList[idx]);
+        await SelectedCallback.InvokeAsync(selectedDirectoryList[idx]);
     }
 
     private async void Back()
@@ -265,7 +249,7 @@
         isBacking = true;
         selectedDirectoryIndex = selectedDirectoryIndex + 1;
 
-        await BackAndForwardCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
+        await SelectedCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
     }
 
     private async void Forward()
@@ -273,7 +257,21 @@
         isForwarding = true;
         selectedDirectoryIndex = selectedDirectoryIndex - 1;
 
-        await BackAndForwardCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
+        await SelectedCallback.InvokeAsync(selectedDirectoryList[selectedDirectoryIndex]);
+    }
+
+    private async void Upward()
+    {
+        var dirInfo = new DirectoryInfo(selectedDirectoryList[selectedDirectoryIndex]);
+
+        if (dirInfo.Parent == null)
+        {
+            await SelectedCallback.InvokeAsync(string.Empty);
+        }
+        else
+        {
+            await SelectedCallback.InvokeAsync(dirInfo.Parent.FullName);
+        }
     }
 
     private void DebugPrint(string message)
@@ -282,77 +280,4 @@
         Console.WriteLine("{0} >>> {1}", DateTime.Now.ToString("HH:mm:ss.fff"), message);
 #endif
     }
-
-
-
-    #region Depreciated Codes
-
-    /// <summary>
-    /// this property was depreciated.
-    /// </summary>
-    [Parameter]
-    public string CurrentDirectoryPath
-    {
-        get
-        {
-            return currentDirectoryPath;
-        }
-        set
-        {
-            if (value == null)
-            {
-                Console.WriteLine("currentDirectory set value: null");
-                currentDirectoryPath = null;
-                return;
-            }
-
-            Console.WriteLine("currentDirectory set value: {0}", value);
-
-            //if (currentDirectoryPath != null
-            //    && currentDirectoryPath == value)
-            //{
-            //    return;
-            //}
-
-            //currentDirectoryPath = value;
-
-            //if (isBacking == false)
-            //{
-            //    //Console.WriteLine("Back Push: {0}", value);
-            //    backDirStack.Push(value);
-            //}
-            //else
-            //{
-            //    isBacking = false;
-            //}
-
-            //if (isForwarding == false)
-            //{
-            //    //Console.WriteLine("Foward Push: {0}", value);
-            //    forwardDirStack.Push(value);
-            //}
-            //else
-            //{
-            //    isForwarding = false;
-            //}
-        }
-    }
-
-    private async void Upward()
-    {
-        var dirInfo = new DirectoryInfo(CurrentDirectoryPath);
-
-        if (dirInfo.Parent == null)
-        {
-            await UpwardCallback.InvokeAsync(string.Empty);
-        }
-        else
-        {
-            await UpwardCallback.InvokeAsync(dirInfo.Parent.FullName);
-        }
-
-        SetButon();
-    }
-
-    #endregion
 }
