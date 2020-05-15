@@ -2,13 +2,13 @@
 
 <div class="input-group input-group-sm">
     <input type="text" class="form-control" id="address" value="@addressText" onfocus="this.select();" @onchange="AddressChanged"/>
-    @*<div class="input-group-append">
-        <button class="btn btn-sm btn-outline-secondary" type="button" id="refresh">
+    <div class="input-group-append">
+        <button class="btn btn-sm btn-outline-secondary" type="button" id="refresh" @onclick="Refresh">
             <i class="material-icons align-middle">
                 refresh
             </i>
         </button>
-    </div>*@
+    </div>
 </div>
 
 <ModalDialog Title="Notice" Show="showFailDialog" Message="@dialogMessage" />
@@ -58,18 +58,28 @@
     }
 
     [Parameter]
-    public EventCallback<DirectoryInfo> AddressChangedCallback { get; set; }
+    public EventCallback<string> AddressChangedCallback { get; set; }
 
 
     private async void AddressChanged(ChangeEventArgs args)
     {
-        string changedPath = args.Value.ToString();
-        changedPath = changedPath.Replace(HostName, "");
-        changedPath = changedPath.Replace(" > ", "");
+        RaiseEvent(args.Value.ToString());
+    }
 
-        if (!Directory.Exists(changedPath))
+    private async void Refresh()
+    {
+        RaiseEvent(CurrentPath);
+    }
+
+
+    private async void RaiseEvent(string path)
+    {
+        path = path.Replace(HostName, "");
+        path = path.Replace(" > ", "");
+
+        if (string.IsNullOrEmpty(path) == false && !Directory.Exists(path))
         {
-            dialogMessage = $"Can not find '{changedPath}'. Make sure you typed the name correctly, and then try again.";
+            dialogMessage = $"Can not find '{path}'. Make sure you typed the name correctly, and then try again.";
             showFailDialog = true;
 
             return;
@@ -77,8 +87,7 @@
 
         if (AddressChangedCallback.HasDelegate)
         {
-            await AddressChangedCallback.InvokeAsync(new DirectoryInfo(changedPath));
+            await AddressChangedCallback.InvokeAsync(path);
         }
     }
-
 }

@@ -67,12 +67,12 @@
 
 <div class="btn-toolbar py-1" role="toolbar">
 
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledBackButton" @onclick="Back">
+    <button type="button" class="btn btn-outline-secondary btn-sm mr-1" disabled="@disabledBackButton" @onclick="Back">
         <i class="material-icons align-middle">
             arrow_back
         </i>
     </button>
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledForwardButton" @onclick="Forward">
+    <button type="button" class="btn btn-outline-secondary btn-sm mr-1" disabled="@disabledForwardButton" @onclick="Forward">
         <i class="material-icons align-middle">
             arrow_forward
         </i>
@@ -119,7 +119,7 @@
             </ul>
         </div>
     </div>
-    <button type="button" class="btn btn-light btn-sm mr-1" disabled="@disabledUpwardButton" @onclick="Upward">
+    <button type="button" class="btn btn-outline-secondary btn-sm mr-1" disabled="@disabledUpwardButton" @onclick="Upward">
         <i class="material-icons align-middle">
             arrow_upward
         </i>
@@ -213,8 +213,8 @@
 
     private void SetButon()
     {
-        DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
-        DebugPrint($"selectedDirectoryList[selectedDirectoryIndex] : {selectedDirectoryList[selectedDirectoryIndex]}");
+        //DebugPrint($"SelectedDirectoryList Count : {selectedDirectoryList.Count}");
+        //DebugPrint($"selectedDirectoryList[selectedDirectoryIndex] : {selectedDirectoryList[selectedDirectoryIndex]}");
         disabledBackButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex + 1 == selectedDirectoryList.Count;
         disabledForwardButton = selectedDirectoryList.Count <= 1 | selectedDirectoryIndex == 0;
         disabledUpwardButton = selectedDirectoryList.Count <= 1 | string.IsNullOrEmpty(selectedDirectoryList[selectedDirectoryIndex]);
