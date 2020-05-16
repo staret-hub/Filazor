@@ -1,4 +1,5 @@
-﻿@using Filazor.Core.Data
+﻿@using System.IO
+@using Filazor.Core.Data
 
 @inject FileSystemService FSService
 @inject NavigationManager MyNavigationManager
@@ -15,10 +16,18 @@
         -ms - user - select: none;      /* IE10+ */
     }
 
+    .row-selected {
+        background-color: lightskyblue;
+    }
+
 </style>
 
 
-<table class="table table-light table-sm table-hover small">
+<div class="clearfix border-bottom p-1">
+    @*<button type="button" class="btn btn-outline-secondary float-right btn-sm">Upload</button>*@
+    <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">Download</button>
+</div>
+<table id="file-detail-view" class="table table-light table-sm table-hover small">
     <thead>
         <tr>
             <th>Name</th>
@@ -54,7 +63,7 @@
 
             @foreach (var fileInfo in fileInfos)
             {
-                <tr @ondblclick="(e => SelectedFile(fileInfo))">
+                <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
                     <td valign="middle">
                         <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
                         @fileInfo.Name
@@ -69,11 +78,16 @@
     </tbody>
 </table>
 
+<ModalDialog Title="Notice" Show="showFailDialog" Message="@dialogMessage" />
+
 
 @code {
     private System.IO.DirectoryInfo rootDirInfo;
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
+    private string selectedFile;
+    private bool showFailDialog = false;
+    private string dialogMessage;
 
     [Parameter]
     public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
@@ -119,7 +133,20 @@
 
     private void SelectedFile(System.IO.FileInfo fileInfo)
     {
-        MyNavigationManager.NavigateTo($"/download?fileName={fileInfo.FullName}", true);
+        selectedFile = fileInfo.FullName;
+    }
+
+    private void Download(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            dialogMessage = $"Make sure you selected the file correctly, and then try again.";
+            showFailDialog = true;
+
+            return;
+        }
+
+        MyNavigationManager.NavigateTo($"/download?fileName={path}", true);
     }
 
     private string GetFileSize(System.IO.FileInfo fileInfo)
