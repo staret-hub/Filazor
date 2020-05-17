@@ -14,6 +14,13 @@
         -moz - user - select: none;     /* mozilla browsers */
         -khtml - user - select: none;   /* webkit (konqueror) browsers */
         -ms - user - select: none;      /* IE10+ */
+        cursor: default;
+    }
+
+    tr:hover {
+        background-color: aliceblue;
+        outline: 1px solid;
+        outline-color: deepskyblue;
     }
 
     .row-selected {
@@ -27,7 +34,7 @@
     @*<button type="button" class="btn btn-outline-secondary float-right btn-sm">Upload</button>*@
     <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">Download</button>
 </div>
-<table id="file-detail-view" class="table table-light table-sm table-hover small">
+<table id="file-detail-view" class="table table-light table-sm small">
     <thead>
         <tr>
             <th>Name</th>
