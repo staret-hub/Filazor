@@ -136,11 +136,7 @@
         background-color: aliceblue;
     }
 
-    .row {
-        display: flex;
-        align-items: center;
-        border: 1px solid lightgrey;
-    }
+
 </style>
 
 @if (string.IsNullOrEmpty(hostName))
@@ -149,14 +145,14 @@
 }
 else
 {
-    <div class="container">
-        <div class="row">
+    <div class="container-fluid h-100 d-flex flex-column">
+        <div class="row border">
             <div class="col px-1">
                 <p class="text-center mb-0 py-1" style="color: dimgray"><strong>File Explorer</strong></p>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row align-items-center border">
             <div class="col-2 px-1">
                 <Navigator HostName="@hostName" 
                            SelectedDirectory="@addressbarCurrentPath"
@@ -173,8 +169,8 @@ else
                 </div>*@
         </div>
 
-        <div class="row" style="height: 600px;">
-            <div class="col-3 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
+        <div class="row h-100">
+            <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 100px); overflow: auto;">
                 <ul id="FSTreeView">
                     <li>
                         <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost">
@@ -201,7 +197,7 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-9 px-1 py-1" style="height: 100%; overflow: auto; border: 1px solid lightgrey;">
+            <div class="col-9 px-1 py-1 border" style="height: calc(100vh - 100px); overflow: auto;">
                 @if (string.IsNullOrEmpty(addressbarCurrentPath))
                 {
                     <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="SelectedDirectory" />
@@ -211,6 +207,9 @@ else
                     <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" SelectedDirectoryCallback="SelectedDirectory" />
                 }
             </div>
+        </div>
+        <div class="row">
+
         </div>
     </div>
 }
