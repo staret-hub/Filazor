@@ -32,7 +32,10 @@
 
 <div class="clearfix border-bottom p-1">
     @*<button type="button" class="btn btn-outline-secondary float-right btn-sm">Upload</button>*@
-    <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">Download</button>
+    <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">
+        <i class="material-icons align-middle">cloud_download</i>
+        Download
+    </button>
 </div>
 <table id="file-detail-view" class="table table-light table-sm small">
     <thead>
