@@ -32,19 +32,19 @@
     {
         set
         {
+            Console.WriteLine("in show: {0}", value);
             show = value;
             if (value)
             {
                 modalClass = "show";
                 modalDisplay = "block;";
-                //Console.WriteLine(modalClass);
+                Console.WriteLine(modalClass);
             }
             else
             {
                 modalClass = string.Empty;
                 modalDisplay = "none";
             }
-            StateHasChanged();
         }
     }
 

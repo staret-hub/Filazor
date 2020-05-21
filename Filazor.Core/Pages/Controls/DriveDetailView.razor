@@ -1,4 +1,4 @@
-﻿@using System.IO 
+﻿@using System.IO
 
 
 <style>
@@ -21,33 +21,33 @@
 }
 else
 {
-<div class="container">
-    <div class="row border-0">
-        @foreach (var driveInfo in DriveInfos)
-        {
-            int usingSpace = GetAvailableFreeSizePercent(driveInfo);
+    <div class="container pl-4 m-0">
+        <div class="row border-0">
+            @foreach (var driveInfo in DriveInfos)
+            {
+                int usingSpace = GetAvailableFreeSizePercent(driveInfo);
 
-            <div class="card card-hover border-0" style="width: 250px;max-width: 100%;" @ondblclick="@(e => SelectedDrive(driveInfo.RootDirectory))">
-                <div class="row align-items-center no-gutters border-0">
-                    <div class="col-md-2 border-0 text-center">
-                        <i class="material-icons align-middle" style="font-size: 28px; color: darkgray;">
-                            storage
-                        </i>
-                    </div>
-                    <div class="col-md-10">
-                        <div class="card-body p-1">
-                            <p class="card-title mb-0"><small>@driveInfo.VolumeLabel (@driveInfo.RootDirectory)</small></p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: @usingSpace%" aria-valuenow="@usingSpace" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="card card-hover mr-3 border-0" style="width: 250px; max-width: 100%;" @ondblclick="@(e => SelectedDrive(driveInfo.RootDirectory))">
+                    <div class="row no-gutters border-0">
+                        <div class="col-2 border-0 align-self-center text-center">
+                            <i class="material-icons align-middle" style="font-size: 28px; color: darkgray;">
+                                storage
+                            </i>
+                        </div>
+                        <div class="col-10">
+                            <div class="card-body p-1">
+                                <p class="card-title mb-0"><small>@driveInfo.VolumeLabel (@driveInfo.RootDirectory)</small></p>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @usingSpace%" aria-valuenow="@usingSpace" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <p class="card-text"><small class="text-muted">@GetAvailableFreeSizeText(driveInfo)</small></p>
                             </div>
-                            <p class="card-text"><small class="text-muted">@GetAvailableFreeSizeText(driveInfo)</small></p>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
 }
 
 
