@@ -88,7 +88,7 @@
     </tbody>
 </table>
 
-<ModalDialog Title="Notice" Show="showFailDialog" Message="@dialogMessage" />
+<ModalDialog @ref="failDialog" />
 
 
 @code {
@@ -96,8 +96,9 @@
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
     private string selectedFile;
-    private bool showFailDialog = false;
-    private string dialogMessage;
+
+    private ModalDialog failDialog;
+
 
     [Parameter]
     public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
@@ -150,8 +151,9 @@
     {
         if (string.IsNullOrEmpty(path))
         {
-            dialogMessage = $"Make sure you selected the file correctly, and then try again.";
-            showFailDialog = true;
+            failDialog.Title = "Notice";
+            failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
+            failDialog.Show = true;
 
             return;
         }

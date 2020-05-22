@@ -273,11 +273,4 @@
             await SelectedCallback.InvokeAsync(dirInfo.Parent.FullName);
         }
     }
-
-    private void DebugPrint(string message)
-    {
-#if DEBUG
-        Console.WriteLine("{0} >>> {1}", DateTime.Now.ToString("HH:mm:ss.fff"), message);
-#endif
-    }
 }
