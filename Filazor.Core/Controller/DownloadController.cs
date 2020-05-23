@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Filazor.Core.Pages
+namespace Filazor.Core.Controller
 {
-    public class DownloadModel : PageModel
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DownloadController : ControllerBase
     {
-        public IActionResult OnGet(string fileName)
+        [HttpGet("[action]")]
+        public IActionResult fileDownloadAsync(string fileName)
         {
             FileInfo fileInfo = new FileInfo(fileName);
 

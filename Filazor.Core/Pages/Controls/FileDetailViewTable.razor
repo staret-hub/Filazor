@@ -158,7 +158,7 @@
             return;
         }
 
-        MyNavigationManager.NavigateTo($"/download?fileName={path}", true);
+        MyNavigationManager.NavigateTo($"api/download/fileDownload?fileName={path}", true);
     }
 
     private string GetFileSize(System.IO.FileInfo fileInfo)
