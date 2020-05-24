@@ -32,12 +32,12 @@ namespace Filazor.Core.Controller
                     foreach (var file in HttpContext.Request.Form.Files)
                     {
                         string path = Path.Combine(uploadDirectory, file.FileName);
-                        Console.WriteLine(path);
+                        //Console.WriteLine(path);
                         using (var stream = new FileStream(path, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
-                        Console.WriteLine($"got file: {path}");
+                        //Console.WriteLine($"got file: {path}");
                     }
                 }
 

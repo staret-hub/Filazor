@@ -1,19 +1,21 @@
 ﻿@using System.IO
 @using Filazor.Core.Data
+@implements IDisposable
 
 @inject FileSystemService FSService
 @inject NavigationManager MyNavigationManager
+@inject FileUploadEventNotifyService FileUploadEventNotifyService
 
 
 <style>
 
     tr {
         /* Prevent text selection */
-        user - select: none;          /* standard syntax */
-        -webkit - user - select: none;  /* webkit (safari, chrome) browsers */
-        -moz - user - select: none;     /* mozilla browsers */
-        -khtml - user - select: none;   /* webkit (konqueror) browsers */
-        -ms - user - select: none;      /* IE10+ */
+        user - select: none; /* standard syntax */
+        -webkit - user - select: none; /* webkit (safari, chrome) browsers */
+        -moz - user - select: none; /* mozilla browsers */
+        -khtml - user - select: none; /* webkit (konqueror) browsers */
+        -ms - user - select: none; /* IE10+ */
         cursor: default;
     }
 
@@ -26,16 +28,23 @@
     .row-selected {
         background-color: lightskyblue;
     }
-
 </style>
 
-
 <div class="clearfix border-bottom p-1">
-    @*<button type="button" class="btn btn-outline-secondary float-right btn-sm">Upload</button>*@
-    <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">
-        <i class="material-icons align-middle">cloud_download</i>
-        Download
-    </button>
+
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
+    <form action="api/upload/fileUpload?uploadDirectory=@rootDirInfo.FullName" method="post" enctype="multipart/form-data" target="dummyframe">
+        <label for="fileUpload" class="btn btn-outline-secondary float-right btn-sm">
+            <i class="material-icons align-middle">cloud_upload</i>
+            Upload
+        </label>
+        <input id="fileUpload" name="fileUpload" type="file" style="display: none;" onchange="this.form.submit()" multiple />
+        <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Download(selectedFile))">
+            <i class="material-icons align-middle">cloud_download</i>
+            Download
+        </button>
+    </form>
 </div>
 <table id="file-detail-view" class="table table-light table-sm small">
     <thead>
@@ -121,6 +130,18 @@
         }
     }
 
+    protected override Task OnInitializedAsync()
+    {
+        FileUploadEventNotifyService.FileUploadCompletedEvent += FileUploadEventNotifyService_FileUploadCompletedEvent;
+
+        return base.OnInitializedAsync();
+    }
+
+    private async void FileUploadEventNotifyService_FileUploadCompletedEvent(object sender, EventArgs args)
+    {
+        SetDirectory();
+    }
+
     private async void SetDirectory()
     {
         directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
@@ -172,5 +193,10 @@
         result = Math.Ceiling(result);
 
         return $"{result.ToString("#,###")}KB";
+    }
+
+    public void Dispose()
+    {
+        FileUploadEventNotifyService.FileUploadCompletedEvent -= FileUploadEventNotifyService_FileUploadCompletedEvent;
     }
 }
