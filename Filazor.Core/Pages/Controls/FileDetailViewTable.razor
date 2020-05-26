@@ -56,7 +56,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (rootDirInfo == null || (directoryInfos == null || fileInfos == null))
+        @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
         {
             <tr>
                 <td colspan="5" style="text-align: center;">This folder is empty.</td>
