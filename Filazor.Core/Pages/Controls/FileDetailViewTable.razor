@@ -19,7 +19,7 @@
         cursor: default;
     }
 
-    tbody tr:hover {
+    #file-detail-view tbody tr:hover {
         background-color: aliceblue;
         outline: 1px solid;
         outline-color: deepskyblue;
@@ -28,6 +28,7 @@
     .row-selected {
         background-color: lightskyblue;
     }
+
 </style>
 
 <div class="clearfix border-bottom p-1">
@@ -46,57 +47,58 @@
         </button>
     </form>
 </div>
-<table id="file-detail-view" class="table table-light table-sm small">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Date modified</th>
-            <th>Type</th>
-            <th>Size</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
-        {
+
+
+    <table id="file-detail-view" class="table table-light table-sm small">
+        <thead>
             <tr>
-                <td colspan="5" style="text-align: center;">This folder is empty.</td>
+                <th>Name</th>
+                <th>Date modified</th>
+                <th>Type</th>
+                <th>Size</th>
             </tr>
-        }
-        else
-        {
-            @foreach (var dirInfo in directoryInfos)
+        </thead>
+        <tbody>
+            @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
             {
-                <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
-                    <td>
-                        <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
-                            folder
-                        </i>
-                        @dirInfo.Name
-                    </td>
-                    <td>@dirInfo.LastWriteTime</td>
-                    <td>File folder</td>
-                    <td></td>
-                    <td></td>
+                <tr>
+                    <td colspan="5" style="text-align: center;">This folder is empty.</td>
                 </tr>
             }
-
-            @foreach (var fileInfo in fileInfos)
+            else
             {
-                <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
-                    <td valign="middle">
-                        <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
-                        @fileInfo.Name
-                    </td>
-                    <td>@fileInfo.LastWriteTime</td>
-                    <td>File</td>
-                    <td style="text-align: right;">@GetFileSize(fileInfo)</td>
-                    <td></td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+                @foreach (var dirInfo in directoryInfos)
+                {
+                    <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                        <td>
+                            <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
+                                folder
+                            </i>
+                            @dirInfo.Name
+                        </td>
+                        <td>@dirInfo.LastWriteTime</td>
+                        <td>File folder</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
 
+                @foreach (var fileInfo in fileInfos)
+                {
+                    <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
+                        <td valign="middle">
+                            <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                            @fileInfo.Name
+                        </td>
+                        <td>@fileInfo.LastWriteTime</td>
+                        <td>File</td>
+                        <td style="text-align: right;">@GetFileSize(fileInfo)</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 <ModalDialog @ref="failDialog" />
 
 
