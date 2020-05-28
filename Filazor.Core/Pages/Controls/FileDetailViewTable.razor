@@ -5,6 +5,7 @@
 @inject FileSystemService FSService
 @inject NavigationManager MyNavigationManager
 @inject FileUploadEventNotifyService FileUploadEventNotifyService
+@inject FileDeleteEventNotifyService FileDeleteEventNotifyService
 
 
 <style>
@@ -28,7 +29,6 @@
     .row-selected {
         background-color: lightskyblue;
     }
-
 </style>
 
 <div class="clearfix border-bottom p-1">
@@ -45,60 +45,64 @@
             <i class="material-icons align-middle">cloud_download</i>
             Download
         </button>
+        <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Delete(selectedFile))" disabled="true">
+            <i class="material-icons align-middle">delete</i>
+            Delete
+        </button>
     </form>
 </div>
 
 
-    <table id="file-detail-view" class="table table-light table-sm small">
-        <thead>
+<table id="file-detail-view" class="table table-light table-sm small">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date modified</th>
+            <th>Type</th>
+            <th>Size</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
+        {
             <tr>
-                <th>Name</th>
-                <th>Date modified</th>
-                <th>Type</th>
-                <th>Size</th>
+                <td colspan="5" style="text-align: center;">This folder is empty.</td>
             </tr>
-        </thead>
-        <tbody>
-            @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
+        }
+        else
+        {
+            @foreach (var dirInfo in directoryInfos)
             {
-                <tr>
-                    <td colspan="5" style="text-align: center;">This folder is empty.</td>
+                <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                    <td>
+                        <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
+                            folder
+                        </i>
+                        @dirInfo.Name
+                    </td>
+                    <td>@dirInfo.LastWriteTime</td>
+                    <td>File folder</td>
+                    <td></td>
+                    <td></td>
                 </tr>
             }
-            else
-            {
-                @foreach (var dirInfo in directoryInfos)
-                {
-                    <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
-                        <td>
-                            <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
-                                folder
-                            </i>
-                            @dirInfo.Name
-                        </td>
-                        <td>@dirInfo.LastWriteTime</td>
-                        <td>File folder</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                }
 
-                @foreach (var fileInfo in fileInfos)
-                {
-                    <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
-                        <td valign="middle">
-                            <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
-                            @fileInfo.Name
-                        </td>
-                        <td>@fileInfo.LastWriteTime</td>
-                        <td>File</td>
-                        <td style="text-align: right;">@GetFileSize(fileInfo)</td>
-                        <td></td>
-                    </tr>
-                }
+            @foreach (var fileInfo in fileInfos)
+            {
+                <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
+                    <td valign="middle">
+                        <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                        @fileInfo.Name
+                    </td>
+                    <td>@fileInfo.LastWriteTime</td>
+                    <td>File</td>
+                    <td style="text-align: right;">@GetFileSize(fileInfo)</td>
+                    <td></td>
+                </tr>
             }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 <ModalDialog @ref="failDialog" />
 
 
@@ -134,12 +138,13 @@
 
     protected override Task OnInitializedAsync()
     {
-        FileUploadEventNotifyService.FileUploadCompletedEvent += FileUploadEventNotifyService_FileUploadCompletedEvent;
+        FileUploadEventNotifyService.FileUploadCompletedEvent += RefeshEvent;
+        FileDeleteEventNotifyService.FileDeleteCompletedEvent += RefeshEvent;
 
         return base.OnInitializedAsync();
     }
 
-    private async void FileUploadEventNotifyService_FileUploadCompletedEvent(object sender, EventArgs args)
+    private async void RefeshEvent(object sender, EventArgs args)
     {
         SetDirectory();
     }
@@ -184,6 +189,20 @@
         MyNavigationManager.NavigateTo($"api/download/fileDownload?fileName={path}", true);
     }
 
+    private void Delete(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            failDialog.Title = "Notice";
+            failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
+            failDialog.Show = true;
+
+            return;
+        }
+
+
+    }
+
     private string GetFileSize(System.IO.FileInfo fileInfo)
     {
         if (fileInfo == null)
@@ -199,6 +218,7 @@
 
     public void Dispose()
     {
-        FileUploadEventNotifyService.FileUploadCompletedEvent -= FileUploadEventNotifyService_FileUploadCompletedEvent;
+        FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
+        FileDeleteEventNotifyService.FileDeleteCompletedEvent -= RefeshEvent;
     }
 }
