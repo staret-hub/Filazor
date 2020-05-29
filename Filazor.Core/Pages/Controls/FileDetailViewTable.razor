@@ -5,7 +5,6 @@
 @inject FileSystemService FSService
 @inject NavigationManager MyNavigationManager
 @inject FileUploadEventNotifyService FileUploadEventNotifyService
-@inject FileDeleteEventNotifyService FileDeleteEventNotifyService
 
 
 <style>
@@ -45,7 +44,7 @@
             <i class="material-icons align-middle">cloud_download</i>
             Download
         </button>
-        <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Delete(selectedFile))" disabled="true">
+        <button type="button" class="btn btn-outline-secondary float-right btn-sm mr-2" @onclick="@(e => Delete(selectedFile))">
             <i class="material-icons align-middle">delete</i>
             Delete
         </button>
@@ -139,7 +138,6 @@
     protected override Task OnInitializedAsync()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent += RefeshEvent;
-        FileDeleteEventNotifyService.FileDeleteCompletedEvent += RefeshEvent;
 
         return base.OnInitializedAsync();
     }
@@ -189,7 +187,7 @@
         MyNavigationManager.NavigateTo($"api/download/fileDownload?fileName={path}", true);
     }
 
-    private void Delete(string path)
+    private async void Delete(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -200,7 +198,8 @@
             return;
         }
 
-
+        await FSService.DeleteFile(path);
+        SetDirectory();
     }
 
     private string GetFileSize(System.IO.FileInfo fileInfo)
@@ -219,6 +218,5 @@
     public void Dispose()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
-        FileDeleteEventNotifyService.FileDeleteCompletedEvent -= RefeshEvent;
     }
 }

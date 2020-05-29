@@ -95,5 +95,24 @@ namespace Filazor.Core.Data
                 return result.ToArray();
             });
         }
+
+        public Task<bool> DeleteFile(string fileName)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    FileInfo fileInfo = new FileInfo(fileName);
+                    fileInfo.Delete();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return false;
+                }
+
+                return true;
+            });
+        }
     }
 }
