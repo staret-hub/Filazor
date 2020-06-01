@@ -19,15 +19,45 @@
         cursor: default;
     }
 
+    .row-selected {
+        background-color: lightskyblue;
+    }
+
+    .table-fixed tbody {
+        height: calc(100vh - 190px);
+        overflow-y: auto;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .table-fixed thead,
+    .table-fixed tbody,
+    .table-fixed tr,
+    .table-fixed td,
+    .table-fixed th {
+        display: block;
+    }
+
+    .table-fixed tbody td,
+    .table-fixed tbody th,
+    .table-fixed thead > tr > th {
+        float: left;
+        position: relative;
+
+        &::after {
+            content: '';
+            clear: both;
+            display: block;
+        }
+    }
+
+
     #file-detail-view tbody tr:hover {
         background-color: aliceblue;
         outline: 1px solid;
         outline-color: deepskyblue;
     }
 
-    .row-selected {
-        background-color: lightskyblue;
-    }
 </style>
 
 <div class="clearfix border-bottom p-1">
@@ -51,172 +81,221 @@
     </form>
 </div>
 
-
-<table id="file-detail-view" class="table table-light table-sm small">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Date modified</th>
-            <th>Type</th>
-            <th>Size</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
-        {
+<div class="table-responsive-sm">
+    <table id="file-detail-view" class="table table-hover table-sm table-fixed">
+        <thead>
             <tr>
-                <td colspan="5" style="text-align: center;">This folder is empty.</td>
+                <th scope="col" class="col-5">Name</th>
+                <th scope="col" class="col-3">Date modified</th>
+                <th scope="col" class="col-2">Type</th>
+                <th scope="col" class="col-2">Size</th>
             </tr>
-        }
-        else
-        {
-            @foreach (var dirInfo in directoryInfos)
+        </thead>
+        <tbody>
+            @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
             {
-                <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
-                    <td>
-                        <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
-                            folder
-                        </i>
-                        @dirInfo.Name
-                    </td>
-                    <td>@dirInfo.LastWriteTime</td>
-                    <td>File folder</td>
-                    <td></td>
-                    <td></td>
+                <tr>
+                    <td colspan="5" style="text-align: center;">This folder is empty.</td>
                 </tr>
             }
-
-            @foreach (var fileInfo in fileInfos)
+            else
             {
-                <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
-                    <td valign="middle">
-                        <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
-                        @fileInfo.Name
-                    </td>
-                    <td>@fileInfo.LastWriteTime</td>
-                    <td>File</td>
-                    <td style="text-align: right;">@GetFileSize(fileInfo)</td>
-                    <td></td>
+                @foreach (var dirInfo in directoryInfos)
+                {
+                    <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                        <th scope="row" class="col-5">
+                            <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
+                                folder
+                            </i>
+                            @dirInfo.Name
+                        </th>
+                        <td class="col-3">@dirInfo.LastWriteTime</td>
+                        <td class="col-2">File folder</td>
+                        <td class="col-2">&nbsp;</td>
+                    </tr>
+                }
+
+                @foreach (var fileInfo in fileInfos)
+                {
+                    <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
+                        <th scope="row" class="col-5">
+                            <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                            @fileInfo.Name
+                        </th>
+                        <td class="col-3">@fileInfo.LastWriteTime</td>
+                        <td class="col-2">File</td>
+                        <td class="col-2" style="text-align: right;">@GetFileSize(fileInfo)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+    @*<table id="file-detail-view" class="table table-light table-sm small">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date modified</th>
+                    <th>Type</th>
+                    <th>Size</th>
                 </tr>
+            </thead>
+            <tbody>
+                @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
+                {
+                    <tr>
+                        <td colspan="5" style="text-align: center;">This folder is empty.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var dirInfo in directoryInfos)
+                    {
+                        <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                            <td>
+                                <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
+                                    folder
+                                </i>
+                                @dirInfo.Name
+                            </td>
+                            <td>@dirInfo.LastWriteTime</td>
+                            <td>File folder</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    }
+
+                    @foreach (var fileInfo in fileInfos)
+                    {
+                        <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
+                            <td valign="middle">
+                                <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                                @fileInfo.Name
+                            </td>
+                            <td>@fileInfo.LastWriteTime</td>
+                            <td>File</td>
+                            <td style="text-align: right;">@GetFileSize(fileInfo)</td>
+                            <td></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>*@
+    <ModalDialog @ref="failDialog" />
+
+
+    @code {
+        private System.IO.DirectoryInfo rootDirInfo;
+        private System.IO.DirectoryInfo[] directoryInfos;
+        private System.IO.FileInfo[] fileInfos;
+        private string selectedFile;
+
+        private ModalDialog failDialog;
+
+
+        [Parameter]
+        public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
+
+        [Parameter]
+        public System.IO.DirectoryInfo TargetRootDirectoryInfo
+        {
+            get
+            {
+                return rootDirInfo;
+            }
+            set
+            {
+                rootDirInfo = value;
+
+                if (rootDirInfo == null)
+                    return;
+
+                SetDirectory();
             }
         }
-    </tbody>
-</table>
-<ModalDialog @ref="failDialog" />
 
-
-@code {
-    private System.IO.DirectoryInfo rootDirInfo;
-    private System.IO.DirectoryInfo[] directoryInfos;
-    private System.IO.FileInfo[] fileInfos;
-    private string selectedFile;
-
-    private ModalDialog failDialog;
-
-
-    [Parameter]
-    public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
-
-    [Parameter]
-    public System.IO.DirectoryInfo TargetRootDirectoryInfo
-    {
-        get
+        protected override Task OnInitializedAsync()
         {
-            return rootDirInfo;
+            FileUploadEventNotifyService.FileUploadCompletedEvent += RefeshEvent;
+
+            return base.OnInitializedAsync();
         }
-        set
+
+        private async void RefeshEvent(object sender, EventArgs args)
         {
-            rootDirInfo = value;
-
-            if (rootDirInfo == null)
-                return;
-
             SetDirectory();
         }
-    }
 
-    protected override Task OnInitializedAsync()
-    {
-        FileUploadEventNotifyService.FileUploadCompletedEvent += RefeshEvent;
-
-        return base.OnInitializedAsync();
-    }
-
-    private async void RefeshEvent(object sender, EventArgs args)
-    {
-        SetDirectory();
-    }
-
-    private async void SetDirectory()
-    {
-        directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
-
-        try
+        private async void SetDirectory()
         {
-            fileInfos = await FSService.GetFiles(rootDirInfo);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Exception: {0}", e.Message);
+            directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
+
+            try
+            {
+                fileInfos = await FSService.GetFiles(rootDirInfo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
+
+            await InvokeAsync(() => { this.StateHasChanged(); });
         }
 
-        await InvokeAsync(() => { this.StateHasChanged(); });
-    }
-
-    private async void SelectedDirectory(System.IO.DirectoryInfo dirInfo)
-    {
-        await SelectedDirectoryCallback.InvokeAsync(dirInfo);
-    }
-
-    private void SelectedFile(System.IO.FileInfo fileInfo)
-    {
-        selectedFile = fileInfo.FullName;
-    }
-
-    private void Download(string path)
-    {
-        if (string.IsNullOrEmpty(path))
+        private async void SelectedDirectory(System.IO.DirectoryInfo dirInfo)
         {
-            failDialog.Title = "Notice";
-            failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
-            failDialog.Show = true;
-
-            return;
+            await SelectedDirectoryCallback.InvokeAsync(dirInfo);
         }
 
-        MyNavigationManager.NavigateTo($"api/download/fileDownload?fileName={path}", true);
-    }
-
-    private async void Delete(string path)
-    {
-        if (string.IsNullOrEmpty(path))
+        private void SelectedFile(System.IO.FileInfo fileInfo)
         {
-            failDialog.Title = "Notice";
-            failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
-            failDialog.Show = true;
-
-            return;
+            selectedFile = fileInfo.FullName;
         }
 
-        await FSService.DeleteFile(path);
-        SetDirectory();
-    }
-
-    private string GetFileSize(System.IO.FileInfo fileInfo)
-    {
-        if (fileInfo == null)
+        private void Download(string path)
         {
-            return "";
+            if (string.IsNullOrEmpty(path))
+            {
+                failDialog.Title = "Notice";
+                failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
+                failDialog.Show = true;
+
+                return;
+            }
+
+            MyNavigationManager.NavigateTo($"api/download/fileDownload?fileName={path}", true);
         }
 
-        var result = fileInfo.Length / 1024.0;
-        result = Math.Ceiling(result);
+        private async void Delete(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                failDialog.Title = "Notice";
+                failDialog.Message = $"Make sure you selected the file correctly, and then try again.";
+                failDialog.Show = true;
 
-        return $"{result.ToString("#,###")}KB";
-    }
+                return;
+            }
 
-    public void Dispose()
-    {
-        FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
+            await FSService.DeleteFile(path);
+            SetDirectory();
+        }
+
+        private string GetFileSize(System.IO.FileInfo fileInfo)
+        {
+            if (fileInfo == null)
+            {
+                return "";
+            }
+
+            var result = fileInfo.Length / 1024.0;
+            result = Math.Ceiling(result);
+
+            return $"{result.ToString("#,###")}KB";
+        }
+
+        public void Dispose()
+        {
+            FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
+        }
     }
-}
