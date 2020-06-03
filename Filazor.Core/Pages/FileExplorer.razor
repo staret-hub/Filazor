@@ -197,7 +197,7 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-9 px-1 py-1 border" style="height: calc(100vh - 100px); overflow: auto;">
+            <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 100px); overflow: auto;">
                 @if (string.IsNullOrEmpty(addressbarCurrentPath))
                 {
                     <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="SelectedDirectory" />

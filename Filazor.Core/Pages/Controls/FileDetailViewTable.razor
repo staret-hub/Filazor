@@ -60,12 +60,12 @@
 
 </style>
 
-<div class="clearfix border-bottom p-1">
+<div class="clearfix border-bottom p-1 sticky-top" style="background-color: white;">
 
     <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
 
     <form action="api/upload/fileUpload?uploadDirectory=@rootDirInfo.FullName" method="post" enctype="multipart/form-data" target="dummyframe">
-        <label for="fileUpload" class="btn btn-outline-secondary float-right btn-sm">
+        <label for="fileUpload" class="btn btn-outline-secondary float-right btn-sm mb-0">
             <i class="material-icons align-middle">cloud_upload</i>
             Upload
         </label>
