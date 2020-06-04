@@ -23,35 +23,6 @@
         background-color: lightskyblue;
     }
 
-    .table-fixed tbody {
-        height: calc(100vh - 190px);
-        overflow-y: auto;
-        width: 100%;
-        font-size: 14px;
-    }
-
-    .table-fixed thead,
-    .table-fixed tbody,
-    .table-fixed tr,
-    .table-fixed td,
-    .table-fixed th {
-        display: block;
-    }
-
-    .table-fixed tbody td,
-    .table-fixed tbody th,
-    .table-fixed thead > tr > th {
-        float: left;
-        position: relative;
-
-        &::after {
-            content: '';
-            clear: both;
-            display: block;
-        }
-    }
-
-
     #file-detail-view tbody tr:hover {
         background-color: aliceblue;
         outline: 1px solid;
@@ -81,56 +52,6 @@
     </form>
 </div>
 
-@*<div class="table-responsive-sm">
-    <table id="file-detail-view" class="table table-hover table-sm table-fixed">
-        <thead>
-            <tr>
-                <th scope="col" class="col-5">Name</th>
-                <th scope="col" class="col-3">Date modified</th>
-                <th scope="col" class="col-2">Type</th>
-                <th scope="col" class="col-2">Size</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
-            {
-                <tr>
-                    <td colspan="5" style="text-align: center;">This folder is empty.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var dirInfo in directoryInfos)
-                {
-                    <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
-                        <th scope="row" class="col-5">
-                            <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
-                                folder
-                            </i>
-                            @dirInfo.Name
-                        </th>
-                        <td class="col-3">@dirInfo.LastWriteTime</td>
-                        <td class="col-2">File folder</td>
-                        <td class="col-2">&nbsp;</td>
-                    </tr>
-                }
-
-                @foreach (var fileInfo in fileInfos)
-                {
-                    <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
-                        <th scope="row" class="col-5">
-                            <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
-                            @fileInfo.Name
-                        </th>
-                        <td class="col-3">@fileInfo.LastWriteTime</td>
-                        <td class="col-2">File</td>
-                        <td class="col-2" style="text-align: right;">@GetFileSize(fileInfo)</td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-</div>*@
     <table id="file-detail-view" class="table table-light table-sm small">
             <thead>
                 <tr>
@@ -169,7 +90,7 @@
                     {
                         <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
                             <td valign="middle">
-                                <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: silver;"></span>
+                                <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: @(selectedFile == fileInfo.FullName ? "black" : "silver");"></span>
                                 @fileInfo.Name
                             </td>
                             <td>@fileInfo.LastWriteTime</td>
