@@ -23,7 +23,7 @@
         background-color: lightskyblue;
     }
 
-    #file-detail-view tbody tr:hover {
+    #file-detail-view tbody .tr-hover:hover {
         background-color: aliceblue;
         outline: 1px solid;
         outline-color: deepskyblue;
@@ -72,7 +72,7 @@
                 {
                     @foreach (var dirInfo in directoryInfos)
                     {
-                        <tr @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                        <tr class="tr-hover" @ondblclick="@(e => SelectedDirectory(dirInfo))">
                             <td>
                                 <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
                                     folder
@@ -88,7 +88,7 @@
 
                     @foreach (var fileInfo in fileInfos)
                     {
-                        <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="@(selectedFile == fileInfo.FullName ? "row-selected" : null)">
+                        <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="tr-hover @(selectedFile == fileInfo.FullName ? "row-selected" : null)">
                             <td valign="middle">
                                 <span class="oi oi-file" style="padding-left: 3px; margin-right: 2px; font-size: 14px; color: @(selectedFile == fileInfo.FullName ? "black" : "silver");"></span>
                                 @fileInfo.Name
