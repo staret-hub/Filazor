@@ -170,7 +170,7 @@ else
         </div>
 
         <div class="row h-100">
-            <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 100px); overflow: auto;">
+            <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 140px); overflow: auto;">
                 <ul id="FSTreeView">
                     <li>
                         <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost">
@@ -197,19 +197,23 @@ else
                     </li>
                 </ul>
             </div>
-            <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 100px); overflow: auto;">
+            <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 140px); overflow: auto;">
                 @if (string.IsNullOrEmpty(addressbarCurrentPath))
                 {
                     <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="SelectedDirectory" />
                 }
                 else
                 {
-                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" SelectedDirectoryCallback="SelectedDirectory" />
+                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" 
+                                         SelectedDirectoryCallback="SelectedDirectory"
+                                         ChangedItemCountCallback="ChangedItemCount"/>
                 }
             </div>
         </div>
-        <div class="row">
-
+        <div class="row px-0 py-0 align-items-center border" style="height: 40px">
+            <div class="col-12">
+                <small></small>
+            </div>
         </div>
     </div>
 }
@@ -225,6 +229,7 @@ else
 
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
     private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
+    private int itemCount;
 
 
     private string addressbarCurrentPath;
@@ -261,6 +266,7 @@ else
         selectedItem = "item-selected";
         addressbarCurrentPath = string.Empty;
         lastSelectedDirInfo = null;
+        ChangedItemCount(driveInfos.Length);
     }
 
     /// <summary>
@@ -273,6 +279,7 @@ else
         caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         isActive = string.IsNullOrEmpty(isActive) ? "active" : "";
         selectedItem = "item-selected";
+        ChangedItemCount(driveInfos.Length);
 
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
@@ -306,6 +313,12 @@ else
     {
         lastSelectedDirInfo = selectedDirInfo;
         addressbarCurrentPath = lastSelectedDirInfo.FullName;
+    }
+
+    private void ChangedItemCount(int count)
+    {
+        Console.WriteLine("Count {0}", count);
+        //itemCount = count;
     }
 
     private void MoveTo(string path)
