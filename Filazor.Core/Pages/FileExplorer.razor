@@ -206,13 +206,14 @@ else
                 {
                     <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" 
                                          SelectedDirectoryCallback="SelectedDirectory"
-                                         ChangedItemCountCallback="ChangedItemCount"/>
+                                         ChangedItemCount="ChangedItemCount"
+                                         />
                 }
             </div>
         </div>
         <div class="row px-0 py-0 align-items-center border" style="height: 40px">
             <div class="col-12">
-                <small></small>
+                <small>@itemCount items</small>
             </div>
         </div>
     </div>
@@ -227,10 +228,10 @@ else
     private string selectedItem;
     private string isActive;
 
-    private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
-    private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
     private int itemCount;
 
+    private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
+    private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
 
     private string addressbarCurrentPath;
 
@@ -318,7 +319,7 @@ else
     private void ChangedItemCount(int count)
     {
         Console.WriteLine("Count {0}", count);
-        //itemCount = count;
+        itemCount = count;
     }
 
     private void MoveTo(string path)
@@ -333,6 +334,5 @@ else
             addressbarCurrentPath = lastSelectedDirInfo.FullName;
         }
     }
-
 }
 

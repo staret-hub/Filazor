@@ -118,7 +118,7 @@
     public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
 
     [Parameter]
-    public EventCallback<int> ChangedItemCountCallback { get; set; }
+    public EventCallback<int> ChangedItemCount { get; set; }
 
     [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo
@@ -156,6 +156,16 @@
         return base.OnInitializedAsync();
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender == false)
+        //{
+        //    ChangedItemCount.InvokeAsync(ItemCount);
+        //}
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     private async void RefeshEvent(object sender, EventArgs args)
     {
         SetDirectory();
@@ -163,18 +173,20 @@
 
     private async void SetDirectory()
     {
+        Console.WriteLine("SetDirectory");
+
         directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
+        Console.WriteLine("directoryInfos complete {0}", directoryInfos.Length);
+
         try
         {
             fileInfos = await FSService.GetFiles(rootDirInfo);
+            Console.WriteLine("fileInfos complete {0}", fileInfos.Length);
         }
         catch (Exception e)
         {
             Console.WriteLine("Exception: {0}", e.Message);
         }
-
-        //if (ChangedItemCountCallback.HasDelegate)
-        //    await ChangedItemCountCallback.InvokeAsync(ItemCount);
 
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
@@ -234,5 +246,6 @@
     public void Dispose()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
+        Console.WriteLine("Dispose FileDetailViewTable");
     }
 }
