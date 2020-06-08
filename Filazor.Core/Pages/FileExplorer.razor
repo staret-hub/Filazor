@@ -206,14 +206,14 @@ else
                 {
                     <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" 
                                          SelectedDirectoryCallback="SelectedDirectory"
-                                         ChangedItemCount="ChangedItemCount"
+                                         @bind-ItemCount="testCount"
                                          />
                 }
             </div>
         </div>
         <div class="row px-0 py-0 align-items-center border" style="height: 40px">
             <div class="col-12">
-                <small>@itemCount items</small>
+                <small>@testCount items</small>
             </div>
         </div>
     </div>
@@ -228,6 +228,7 @@ else
     private string selectedItem;
     private string isActive;
 
+    private int testCount;
     private int itemCount;
 
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style

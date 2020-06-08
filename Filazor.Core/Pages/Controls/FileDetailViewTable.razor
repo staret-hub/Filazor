@@ -118,9 +118,6 @@
     public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
 
     [Parameter]
-    public EventCallback<int> ChangedItemCount { get; set; }
-
-    [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo
     {
         get
@@ -129,6 +126,8 @@
         }
         set
         {
+            Console.WriteLine("TargetRootDirectoryInfo");
+
             rootDirInfo = value;
 
             if (rootDirInfo == null)
@@ -138,16 +137,12 @@
         }
     }
 
-    public int ItemCount
-    {
-        get
-        {
-            int itemCount = directoryInfos == null ? 0 : directoryInfos.Length;
-            itemCount += fileInfos == null ? 0 : fileInfos.Length;
+    [Parameter]
+    public int ItemCount { get; set; }
 
-            return itemCount;
-        }
-    }
+    [Parameter]
+    public EventCallback<int> ItemCountChanged { get; set; }
+
 
     protected override Task OnInitializedAsync()
     {
@@ -156,13 +151,13 @@
         return base.OnInitializedAsync();
     }
 
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        //if (firstRender == false)
-        //{
-        //    ChangedItemCount.InvokeAsync(ItemCount);
-        //}
-
         return base.OnAfterRenderAsync(firstRender);
     }
 
@@ -173,20 +168,25 @@
 
     private async void SetDirectory()
     {
-        Console.WriteLine("SetDirectory");
+        //Console.WriteLine("SetDirectory");
 
         directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
-        Console.WriteLine("directoryInfos complete {0}", directoryInfos.Length);
+        //Console.WriteLine("directoryInfos complete {0}", directoryInfos.Length);
 
         try
         {
             fileInfos = await FSService.GetFiles(rootDirInfo);
-            Console.WriteLine("fileInfos complete {0}", fileInfos.Length);
+            //Console.WriteLine("fileInfos complete {0}", fileInfos.Length);
         }
         catch (Exception e)
         {
             Console.WriteLine("Exception: {0}", e.Message);
         }
+
+        ItemCount = directoryInfos == null ? 0 : directoryInfos.Length;
+        ItemCount += fileInfos == null ? 0 : fileInfos.Length;
+        
+        Console.WriteLine("SetDirectory Item Count: {0}", ItemCount);
 
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
