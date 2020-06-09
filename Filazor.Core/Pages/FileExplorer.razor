@@ -155,17 +155,17 @@ else
         <div class="row align-items-center border">
             <div class="col-2 px-1">
                 <Navigator HostName="@hostName" 
-                           SelectedDirectory="@addressbarCurrentPath"
+                           SelectedDirectory="@selectedPath"
                            SelectedCallback="MoveTo" />
             </div>
             <div class="col-7 px-1">
-                <AddressBar HostName="@hostName" CurrentPath="@addressbarCurrentPath" AddressChangedCallback="MoveTo" />
+                <AddressBar HostName="@hostName" CurrentPath="@selectedPath" AddressChangedCallback="MoveTo" />
             </div>
             <div class="col-3 px-1">
                 @*<SearchBox />*@
             </div>
             @*<div class="col-1 px-1">
-                    <UploadDownloadControl UploadDirectory="@addressbarCurrentPath" />
+                    <UploadDownloadControl UploadDirectory="@selectedPath" />
                 </div>*@
         </div>
 
@@ -173,7 +173,7 @@ else
             <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 140px); overflow: auto;">
                 <ul id="FSTreeView">
                     <li>
-                        <span class="@selectedItem" style="display: block;" @onclick="SelectedHost" @ondblclick="ExpandHost">
+                        <span class="@selectedItem" style="display: block;" @onclick="e => MoveTo(null)" @ondblclick="ExpandHost">
                             <span class="caret @caretDirection" @onclick="ExpandHost" />
                             <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
                                 desktop_windows
@@ -198,22 +198,22 @@ else
                 </ul>
             </div>
             <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 140px); overflow: auto;">
-                @if (string.IsNullOrEmpty(addressbarCurrentPath))
+                @if (string.IsNullOrEmpty(selectedPath))
                 {
-                    <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="SelectedDirectory" />
+                    <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="MoveTo" />
                 }
                 else
                 {
                     <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" 
-                                         SelectedDirectoryCallback="SelectedDirectory"
-                                         @bind-ItemCount="testCount"
+                                         SelectedDirectoryCallback="MoveTo"
+                                         @bind-ItemCount="itemCount"
                                          />
                 }
             </div>
         </div>
         <div class="row px-0 py-0 align-items-center border" style="height: 40px">
             <div class="col-12">
-                <small>@testCount items</small>
+                <small>@itemCount items</small>
             </div>
         </div>
     </div>
@@ -221,40 +221,43 @@ else
 
 
 @code {
-    private string hostName;
-    private DriveInfo[] driveInfos;
+
+    #region Before Refact
 
     private string caretDirection;
     private string selectedItem;
     private string isActive;
 
-    private int testCount;
     private int itemCount;
 
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
     private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
 
-    private string addressbarCurrentPath;
+    #endregion
+
+    private string hostName;
+    private DriveInfo[] driveInfos;
+    private string selectedPath = null; // if the value is null, it means selected hostName(will show Drives)
 
 
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
         driveInfos = await FSService.GetDriveListAsync();
-
-        // set default
-        if (driveInfos != null && driveInfos.Length > 0)
-        {
-            UpdateUIForHost();
-        }
     }
 
-    /// <summary>
-    /// Host node click event
-    /// </summary>
-    private void SelectedHost()
+    protected override void OnAfterRender(bool firstRender)
     {
-        UpdateUIForHost();
+        if (firstRender)
+        {
+            // set default
+            if (driveInfos != null && driveInfos.Length > 0)
+            {
+                UpdateUIForHost();
+            }
+        }
+
+        base.OnAfterRender(firstRender);
     }
 
     private void UpdateUIForHost()
@@ -266,7 +269,7 @@ else
         }
 
         selectedItem = "item-selected";
-        addressbarCurrentPath = string.Empty;
+        selectedPath = string.Empty;
         lastSelectedDirInfo = null;
         ChangedItemCount(driveInfos.Length);
     }
@@ -302,19 +305,7 @@ else
         }
 
         lastSelectedNode = args;
-        lastSelectedDirInfo = args.TargetRootDirectoryInfo;
-        addressbarCurrentPath = lastSelectedDirInfo.FullName;
-    }
-
-    /// <summary>
-    /// move to selected directory
-    /// using AddressBar / DriveDetailView / FileDetailViewTable
-    /// </summary>
-    /// <param name="selectedDirInfo">Selected DirectoryInfo</param>
-    private void SelectedDirectory(DirectoryInfo selectedDirInfo)
-    {
-        lastSelectedDirInfo = selectedDirInfo;
-        addressbarCurrentPath = lastSelectedDirInfo.FullName;
+        MoveTo(args.TargetRootDirectoryInfo.FullName);
     }
 
     private void ChangedItemCount(int count)
@@ -332,7 +323,7 @@ else
         else
         {
             lastSelectedDirInfo = new DirectoryInfo(path);
-            addressbarCurrentPath = lastSelectedDirInfo.FullName;
+            selectedPath = lastSelectedDirInfo.FullName;
         }
     }
 }

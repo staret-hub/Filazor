@@ -72,7 +72,7 @@
             {
                 @foreach (var dirInfo in directoryInfos)
                 {
-                    <tr class="tr-hover" @ondblclick="@(e => SelectedDirectory(dirInfo))">
+                    <tr class="tr-hover" @ondblclick="@(e => SelectedDirectory(dirInfo.FullName))">
                         <td>
                             <i class="material-icons align-middle" style="font-size: 18px; color: gold;">
                                 folder
@@ -115,7 +115,7 @@
 
 
     [Parameter]
-    public EventCallback<System.IO.DirectoryInfo> SelectedDirectoryCallback { get; set; }
+    public EventCallback<string> SelectedDirectoryCallback { get; set; }
 
     [Parameter]
     public System.IO.DirectoryInfo TargetRootDirectoryInfo
@@ -191,9 +191,9 @@
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
 
-    private async void SelectedDirectory(System.IO.DirectoryInfo dirInfo)
+    private async void SelectedDirectory(string path)
     {
-        await SelectedDirectoryCallback.InvokeAsync(dirInfo);
+        await SelectedDirectoryCallback.InvokeAsync(path);
     }
 
     private void SelectedFile(System.IO.FileInfo fileInfo)
@@ -246,6 +246,5 @@
     public void Dispose()
     {
         FileUploadEventNotifyService.FileUploadCompletedEvent -= RefeshEvent;
-        Console.WriteLine("Dispose FileDetailViewTable");
     }
 }
