@@ -173,8 +173,8 @@ else
             <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 140px); overflow: auto;">
                 <ul id="FSTreeView">
                     <li>
-                        <span class="@selectedItem" style="display: block;" @onclick="e => MoveTo(null)" @ondblclick="ExpandHost">
-                            <span class="caret @caretDirection" @onclick="ExpandHost" />
+                        <span class="@(expandHost ? "item-selected" : null)" style="display: block;" @onclick="e => MoveTo(null)" @ondblclick="ExpandHost">
+                            <span class="caret @(caretDown ? "caret-down" : null)" @onclick="ExpandHost" />
                             <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
                                 desktop_windows
                             </i>
@@ -224,8 +224,6 @@ else
 
     #region Before Refact
 
-    private string caretDirection;
-    private string selectedItem;
     private string isActive;
 
     private int itemCount;
@@ -238,6 +236,8 @@ else
     private string hostName;
     private DriveInfo[] driveInfos;
     private string selectedPath = null; // if the value is null, it means selected hostName(will show Drives)
+    private bool expandHost = false;
+    private bool caretDown = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -268,7 +268,6 @@ else
             lastSelectedNode = null;
         }
 
-        selectedItem = "item-selected";
         selectedPath = string.Empty;
         lastSelectedDirInfo = null;
         ChangedItemCount(driveInfos.Length);
@@ -280,10 +279,10 @@ else
     private async void ExpandHost()
     {
         driveInfos = await FSService.GetDriveListAsync();
+        expandHost = !expandHost;
+        caretDown = !caretDown;
 
-        caretDirection = string.IsNullOrEmpty(caretDirection) ? "caret-down" : "";
         isActive = string.IsNullOrEmpty(isActive) ? "active" : "";
-        selectedItem = "item-selected";
         ChangedItemCount(driveInfos.Length);
 
         await InvokeAsync(() => { this.StateHasChanged(); });
@@ -295,9 +294,9 @@ else
     /// <param name="args">Event Node</param>
     private void DriveNodeCallback(FSTreeNode args)
     {
-        if (lastSelectedNode == null)
+        if (lastSelectedNode == null)   // wheu u click tree node
         {
-            selectedItem = null;
+            expandHost = false;
         }
         else
         {
