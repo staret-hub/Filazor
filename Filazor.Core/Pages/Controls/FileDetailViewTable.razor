@@ -110,6 +110,7 @@
     private System.IO.DirectoryInfo[] directoryInfos;
     private System.IO.FileInfo[] fileInfos;
     private string selectedFile;
+    private bool shouldRender;
 
     private ModalDialog failDialog;
 
@@ -126,8 +127,6 @@
         }
         set
         {
-            Console.WriteLine("TargetRootDirectoryInfo");
-
             rootDirInfo = value;
 
             if (rootDirInfo == null)
@@ -137,11 +136,7 @@
         }
     }
 
-    [Parameter]
     public int ItemCount { get; set; }
-
-    [Parameter]
-    public EventCallback<int> ItemCountChanged { get; set; }
 
 
     protected override Task OnInitializedAsync()
@@ -185,7 +180,7 @@
 
         ItemCount = directoryInfos == null ? 0 : directoryInfos.Length;
         ItemCount += fileInfos == null ? 0 : fileInfos.Length;
-        
+
         Console.WriteLine("SetDirectory Item Count: {0}", ItemCount);
 
         await InvokeAsync(() => { this.StateHasChanged(); });
