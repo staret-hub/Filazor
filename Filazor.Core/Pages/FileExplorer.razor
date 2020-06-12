@@ -201,8 +201,10 @@ else
                 }
                 else
                 {
-                    <FileDetailViewTable TargetRootDirectoryInfo="@lastSelectedDirInfo" 
-                                         SelectedDirectoryCallback="MoveTo"
+                    <FileDetailViewTable SelectedDirectoryPath="@selectedPath"
+                                         IncludedDirectoryInfos="@directoryInfos"
+                                         IncludedFileInfos="@fileInfos"
+                                         OnSelectedDirectory="MoveTo"
                                          />
                 }
             </div>
@@ -220,12 +222,15 @@ else
 
     private string hostName;
     private DriveInfo[] driveInfos;
+    private DirectoryInfo[] directoryInfos;
+    private FileInfo[] fileInfos;
     private string selectedPath = null; // if the value is null, it means selected hostName(will show Drives)
+
     private bool expandHost = false;
     private bool caretDown = false;
     private bool showNestedNode = false;
+
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
-    private DirectoryInfo lastSelectedDirInfo; // for FileDetailViewTable
     private int itemCount;
 
 
@@ -246,8 +251,6 @@ else
             }
         }
 
-        Console.WriteLine("Parent itemCount: {0}", itemCount);
-
         base.OnAfterRender(firstRender);
     }
 
@@ -259,9 +262,10 @@ else
             lastSelectedNode = null;
         }
 
-        selectedPath = string.Empty;
-        lastSelectedDirInfo = null;
-        ItemCountChanged(driveInfos.Length);
+        selectedPath = null;
+        itemCount = driveInfos.Length;
+
+        StateHasChanged();
     }
 
     /// <summary>
@@ -274,7 +278,7 @@ else
         caretDown = !caretDown;
         showNestedNode = !showNestedNode;
 
-        ItemCountChanged(driveInfos.Length);
+        itemCount = driveInfos.Length;
 
         await InvokeAsync(() => { this.StateHasChanged(); });
     }
@@ -298,12 +302,6 @@ else
         MoveTo(args.TargetRootDirectoryInfo.FullName);
     }
 
-    private void ItemCountChanged(int count)
-    {
-        Console.WriteLine("Count {0}", count);
-        itemCount = count;
-    }
-
     private void MoveTo(string path)
     {
         if (string.IsNullOrEmpty(path))
@@ -312,9 +310,27 @@ else
         }
         else
         {
-            lastSelectedDirInfo = new DirectoryInfo(path);
-            selectedPath = lastSelectedDirInfo.FullName;
+            SetDirectoryItems(path);
         }
     }
-}
 
+    private async void SetDirectoryItems(string path)
+    {
+        selectedPath = path;
+        directoryInfos = await FSService.GetDirectoryInfos(selectedPath);
+
+        try
+        {
+            fileInfos = await FSService.GetFiles(new DirectoryInfo(selectedPath));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Exception: {0}", e.Message);
+        }
+
+        itemCount = directoryInfos == null ? 0 : directoryInfos.Length;
+        itemCount += fileInfos == null ? 0 : fileInfos.Length;
+
+        await InvokeAsync(() => { this.StateHasChanged(); });
+    }
+}

@@ -35,7 +35,7 @@
 
     <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
 
-    <form action="api/upload/fileUpload?uploadDirectory=@rootDirInfo.FullName" method="post" enctype="multipart/form-data" target="dummyframe">
+    <form action="api/upload/fileUpload?uploadDirectory=@SelectedDirectoryPath" method="post" enctype="multipart/form-data" target="dummyframe">
         <label for="fileUpload" class="btn btn-outline-secondary float-right btn-sm mb-0">
             <i class="material-icons align-middle">cloud_upload</i>
             Upload
@@ -62,7 +62,7 @@
             </tr>
         </thead>
         <tbody>
-            @if ((directoryInfos == null || directoryInfos.Length == 0) && (fileInfos == null || fileInfos.Length == 0))
+            @if ((IncludedDirectoryInfos == null || IncludedDirectoryInfos.Length == 0) && (IncludedFileInfos == null || IncludedFileInfos.Length == 0))
             {
                 <tr>
                     <td colspan="5" style="text-align: center;">This folder is empty.</td>
@@ -70,7 +70,7 @@
             }
             else
             {
-                @foreach (var dirInfo in directoryInfos)
+                @foreach (var dirInfo in IncludedDirectoryInfos)
                 {
                     <tr class="tr-hover" @ondblclick="@(e => SelectedDirectory(dirInfo.FullName))">
                         <td>
@@ -86,7 +86,7 @@
                     </tr>
                 }
 
-                @foreach (var fileInfo in fileInfos)
+                @foreach (var fileInfo in IncludedFileInfos)
                 {
                     <tr @onclick="(e => SelectedFile(fileInfo))" @ondblclick="(e => Download(fileInfo.FullName))" class="tr-hover @(selectedFile == fileInfo.FullName ? "row-selected" : null)">
                         <td valign="middle">
@@ -106,37 +106,21 @@
 
 
 @code {
-    private System.IO.DirectoryInfo rootDirInfo;
-    private System.IO.DirectoryInfo[] directoryInfos;
-    private System.IO.FileInfo[] fileInfos;
     private string selectedFile;
-    private bool shouldRender;
 
     private ModalDialog failDialog;
 
+    [Parameter]
+    public string SelectedDirectoryPath { get; set; }
 
     [Parameter]
-    public EventCallback<string> SelectedDirectoryCallback { get; set; }
+    public DirectoryInfo[] IncludedDirectoryInfos { get; set; }
 
     [Parameter]
-    public System.IO.DirectoryInfo TargetRootDirectoryInfo
-    {
-        get
-        {
-            return rootDirInfo;
-        }
-        set
-        {
-            rootDirInfo = value;
+    public FileInfo[] IncludedFileInfos { get; set; }
 
-            if (rootDirInfo == null)
-                return;
-
-            SetDirectory();
-        }
-    }
-
-    public int ItemCount { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSelectedDirectory { get; set; }
 
 
     protected override Task OnInitializedAsync()
@@ -156,39 +140,14 @@
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    private async void RefeshEvent(object sender, EventArgs args)
+    private void RefeshEvent(object sender, EventArgs args)
     {
-        SetDirectory();
+        OnSelectedDirectory.InvokeAsync(SelectedDirectoryPath);
     }
 
-    private async void SetDirectory()
+    private Task SelectedDirectory(string path)
     {
-        //Console.WriteLine("SetDirectory");
-
-        directoryInfos = await FSService.GetDirectoryInfos(rootDirInfo.FullName);
-        //Console.WriteLine("directoryInfos complete {0}", directoryInfos.Length);
-
-        try
-        {
-            fileInfos = await FSService.GetFiles(rootDirInfo);
-            //Console.WriteLine("fileInfos complete {0}", fileInfos.Length);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Exception: {0}", e.Message);
-        }
-
-        ItemCount = directoryInfos == null ? 0 : directoryInfos.Length;
-        ItemCount += fileInfos == null ? 0 : fileInfos.Length;
-
-        Console.WriteLine("SetDirectory Item Count: {0}", ItemCount);
-
-        await InvokeAsync(() => { this.StateHasChanged(); });
-    }
-
-    private async void SelectedDirectory(string path)
-    {
-        await SelectedDirectoryCallback.InvokeAsync(path);
+        return OnSelectedDirectory.InvokeAsync(path);
     }
 
     private void SelectedFile(System.IO.FileInfo fileInfo)
@@ -222,7 +181,7 @@
         }
 
         await FSService.DeleteFile(path);
-        SetDirectory();
+        await SelectedDirectory(SelectedDirectoryPath);
     }
 
     private string GetFileSize(System.IO.FileInfo fileInfo)

@@ -12,10 +12,10 @@ namespace Filazor.Core.Data
 
         public void Notify(object name, params dynamic[] args)
         {
-            Console.WriteLine("Notify");
+            //Console.WriteLine("Notify");
             if (FileUploadCompletedEvent != null)
             {
-                Console.WriteLine("FileUploadCompletedEvent?.Invoke");
+                //Console.WriteLine("FileUploadCompletedEvent?.Invoke");
                 FileUploadCompletedEvent?.Invoke(this, EventArgs.Empty);
             }
         }
