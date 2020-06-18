@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Filazor.Core.Data
 {
+    [AllowAnonymous]
     public class LoginService
     {
         public bool Login(string id, string password)
