@@ -16,16 +16,13 @@ namespace Filazor.Core.Pages
     {
         public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
-        {
-            return LocalRedirect("/loginControl");
-        }
+        //public async Task<IActionResult> OnGetAsync()
+        //{
+        //    return LocalRedirect("/loginControl");
+        //}
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnGetAsync(string paramUsername, string paramPassword)
         {
-            string paramUsername = null;
-            string paramPassword = null;
-
             string returnUrl = Url.Content("~/");
             try
             {

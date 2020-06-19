@@ -16,7 +16,7 @@
                     <div class="card card-signin my-5">
                         <div class="card-body">
                             <h5 class="card-title text-center">Sign In</h5>
-                            <form class="form-signin" method="post" action="/login">
+                            <form class="form-signin" method="get" action="/login?paramUsername=@encode(@userName)&paramPassword=@encode(@password)">
                                 <div class="form-label-group">
                                     <input type="text" id="inputID" class="form-control" placeholder="User ID" @bind="@userName" required autofocus>
                                     <label for="inputID"></label>
