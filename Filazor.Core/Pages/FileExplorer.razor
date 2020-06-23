@@ -6,6 +6,8 @@
 
 @inject FileSystemService FSService
 
+<AuthorizeView>
+    <Authorized>
 
 <style>
 
@@ -216,6 +218,12 @@ else
         </div>
     </div>
 }
+
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {

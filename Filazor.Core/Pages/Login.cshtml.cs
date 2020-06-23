@@ -16,11 +16,6 @@ namespace Filazor.Core.Pages
     {
         public string ReturnUrl { get; set; }
 
-        //public async Task<IActionResult> OnGetAsync()
-        //{
-        //    return LocalRedirect("/loginControl");
-        //}
-
         public async Task<IActionResult> OnGetAsync(string paramUsername, string paramPassword)
         {
             string returnUrl = Url.Content("~/");
@@ -64,6 +59,7 @@ namespace Filazor.Core.Pages
             {
                 string error = ex.Message;
             }
+
             return LocalRedirect(returnUrl);
         }
     }
