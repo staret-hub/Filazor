@@ -17,7 +17,7 @@ namespace Filazor.Core.Pages
             await HttpContext
                 .SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
-            return LocalRedirect(Url.Content("~/"));
+            return LocalRedirect(Url.Content("~/loginControl"));
         }
     }
 }

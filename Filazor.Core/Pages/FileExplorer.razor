@@ -5,219 +5,220 @@
 @using Filazor.Core.Pages.Controls
 
 @inject FileSystemService FSService
+@inject NavigationManager Navigation
 
 <AuthorizeView>
     <Authorized>
 
-<style>
+        <style>
 
-    /* Remove default bullets */
-    ul, #FSTreeView {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
+            /* Remove default bullets */
+            ul, #FSTreeView {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
 
-    /* Remove margins and padding from the parent ul */
-    #FSTreeView {
-        margin: 0;
-        padding: 0;
-    }
+            /* Remove margins and padding from the parent ul */
+            #FSTreeView {
+                margin: 0;
+                padding: 0;
+            }
 
-    li {
-        cursor: pointer;
-        /* Prevent text selection */
-        user-select: none; /* standard syntax */
-        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-        -moz-user-select: none; /* mozilla browsers */
-        -khtml-user-select: none; /* webkit (konqueror) browsers */
-        -ms-user-select: none; /* IE10+ */
-    }
+            li {
+                cursor: pointer;
+                /* Prevent text selection */
+                user-select: none; /* standard syntax */
+                -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+                -moz-user-select: none; /* mozilla browsers */
+                -khtml-user-select: none; /* webkit (konqueror) browsers */
+                -ms-user-select: none; /* IE10+ */
+            }
 
-        li > span:hover {
-            background-color: aliceblue;
-            outline: 1px solid;
-            outline-color: deepskyblue;
+                li > span:hover {
+                    background-color: aliceblue;
+                    outline: 1px solid;
+                    outline-color: deepskyblue;
+                }
+
+                li > span {
+                    padding-left: 5px;
+                }
+
+                li li > span {
+                    padding-left: 15px;
+                }
+
+                li li li > span {
+                    padding-left: 35px;
+                }
+
+                li li li li > span {
+                    padding-left: 50px;
+                }
+
+                li li li li li > span {
+                    padding-left: 65px;
+                }
+
+                li li li li li li > span {
+                    padding-left: 80px;
+                }
+
+                li li li li li li li > span {
+                    padding-left: 95px;
+                }
+
+                li li li li li li li li > span {
+                    padding-left: 110px;
+                }
+
+                li li li li li li li li li > span {
+                    padding-left: 125px;
+                }
+
+                li li li li li li li li li li > span {
+                    padding-left: 140px;
+                }
+
+                li li li li li li li li li li li > span {
+                    padding-left: 155px;
+                }
+
+                li li li li li li li li li li li li > span {
+                    padding-left: 170px;
+                }
+
+                li li li li li li li li li li li li li > span {
+                    padding-left: 185px;
+                }
+
+                li li li li li li li li li li li li li li > span {
+                    padding-left: 200px;
+                }
+
+                li li li li li li li li li li li li li li li > span {
+                    padding-left: 215px;
+                }
+
+                li li li li li li li li li li li li li li li li > span {
+                    padding-left: 230px;
+                }
+
+            /* Style the caret/arrow */
+            .caret {
+                cursor: pointer;
+                user-select: none; /* Prevent text selection */
+            }
+
+                /* Create the caret/arrow with a unicode, and style it */
+                .caret::before {
+                    content: "\276F";
+                    color: darkgray;
+                    display: inline-block;
+                    margin-right: 3px;
+                }
+
+            /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+            .caret-down::before {
+                transform: rotate(90deg);
+                color: black;
+            }
+
+            /* Hide the nested list */
+            .nested {
+                display: none;
+            }
+
+            /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+            .active {
+                display: block;
+            }
+
+            .item-selected {
+                background-color: aliceblue;
+            }
+        </style>
+
+        @if (string.IsNullOrEmpty(hostName))
+        {
+            <Loader />
         }
+        else
+        {
+            <div class="container-fluid h-100 d-flex flex-column">
+                <div class="row border">
+                    <div class="col px-1">
+                        <p class="text-center mb-0 py-1" style="color: dimgray"><strong>File Explorer</strong></p>
+                    </div>
+                    <button type="button" class="close px-2" aria-label="Logout" @onclick="Logout">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
-        li > span {
-            padding-left: 5px;
-        }
+                <div class="row align-items-center border">
+                    <div class="col-2 px-1">
+                        <Navigator HostName="@hostName"
+                                   SelectedDirectory="@selectedPath"
+                                   SelectedCallback="MoveTo" />
+                    </div>
+                    <div class="col-7 px-1">
+                        <AddressBar HostName="@hostName" CurrentPath="@selectedPath" AddressChangedCallback="MoveTo" />
+                    </div>
+                    <div class="col-3 px-1">
+                        @*<SearchBox />*@
+                    </div>
+                </div>
 
-        li li > span {
-            padding-left: 15px;
-        }
-
-        li li li > span {
-            padding-left: 35px;
-        }
-
-        li li li li > span {
-            padding-left: 50px;
-        }
-
-        li li li li li > span {
-            padding-left: 65px;
-        }
-
-        li li li li li li > span {
-            padding-left: 80px;
-        }
-
-        li li li li li li li > span {
-            padding-left: 95px;
-        }
-
-        li li li li li li li li > span {
-            padding-left: 110px;
-        }
-
-        li li li li li li li li li > span {
-            padding-left: 125px;
-        }
-
-        li li li li li li li li li li > span {
-            padding-left: 140px;
-        }
-
-        li li li li li li li li li li li > span {
-            padding-left: 155px;
-        }
-
-        li li li li li li li li li li li li > span {
-            padding-left: 170px;
-        }
-
-        li li li li li li li li li li li li li > span {
-            padding-left: 185px;
-        }
-
-        li li li li li li li li li li li li li li > span {
-            padding-left: 200px;
-        }
-
-        li li li li li li li li li li li li li li li > span {
-            padding-left: 215px;
-        }
-
-        li li li li li li li li li li li li li li li li > span {
-            padding-left: 230px;
-        }
-
-    /* Style the caret/arrow */
-    .caret {
-        cursor: pointer;
-        user-select: none; /* Prevent text selection */
-    }
-
-    /* Create the caret/arrow with a unicode, and style it */
-    .caret::before {
-        content: "\276F";
-        color: darkgray;
-        display: inline-block;
-        margin-right: 3px;
-    }
-
-    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
-    .caret-down::before {
-        transform: rotate(90deg);
-        color: black;
-    }
-
-    /* Hide the nested list */
-    .nested {
-        display: none;
-    }
-
-    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
-    .active {
-        display: block;
-    }
-
-    .item-selected {
-        background-color: aliceblue;
-    }
-
-
-</style>
-
-@if (string.IsNullOrEmpty(hostName))
-{
-    <Loader />
-}
-else
-{
-    <div class="container-fluid h-100 d-flex flex-column">
-        <div class="row border">
-            <div class="col px-1">
-                <p class="text-center mb-0 py-1" style="color: dimgray"><strong>File Explorer</strong></p>
-            </div>
-        </div>
-
-        <div class="row align-items-center border">
-            <div class="col-2 px-1">
-                <Navigator HostName="@hostName" 
-                           SelectedDirectory="@selectedPath"
-                           SelectedCallback="MoveTo" />
-            </div>
-            <div class="col-7 px-1">
-                <AddressBar HostName="@hostName" CurrentPath="@selectedPath" AddressChangedCallback="MoveTo" />
-            </div>
-            <div class="col-3 px-1">
-                @*<SearchBox />*@
-            </div>
-        </div>
-
-        <div class="row h-100">
-            <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 140px); overflow: auto;">
-                <ul id="FSTreeView">
-                    <li>
-                        <span class="@(expandHost ? "item-selected" : null)" style="display: block;" @onclick="e => MoveTo(null)" @ondblclick="ExpandHost">
-                            <span class="caret @(caretDown ? "caret-down" : null)" @onclick="ExpandHost" />
-                            <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
-                                desktop_windows
-                            </i>
-                            <small>@hostName</small>
-                        </span>
-                        @if (driveInfos != null)
-                        {
-                            <ul class="nested @(showNestedNode ? "active" : null)">
-                                @foreach (var driveInfo in driveInfos)
+                <div class="row h-100">
+                    <div class="col-3 px-1 py-1 border" style="height: calc(100vh - 140px); overflow: auto;">
+                        <ul id="FSTreeView">
+                            <li>
+                                <span class="@(expandHost ? "item-selected" : null)" style="display: block;" @onclick="e => MoveTo(null)" @ondblclick="ExpandHost">
+                                    <span class="caret @(caretDown ? "caret-down" : null)" @onclick="ExpandHost" />
+                                    <i class="material-icons align-middle" style="font-size: 18px; color: dimgrey;">
+                                        desktop_windows
+                                    </i>
+                                    <small>@hostName</small>
+                                </span>
+                                @if (driveInfos != null)
                                 {
-                                    <li>
-                                        <FSTreeNode IsDrive=true
-                                                    DriveVolumeLabel=@driveInfo.VolumeLabel
-                                                    TargetRootDirectoryInfo=@driveInfo.RootDirectory
-                                                    OnClickCallback="@DriveNodeCallback" />
-                                    </li>
+                                    <ul class="nested @(showNestedNode ? "active" : null)">
+                                        @foreach (var driveInfo in driveInfos)
+                                        {
+                                            <li>
+                                                <FSTreeNode IsDrive=true
+                                                            DriveVolumeLabel=@driveInfo.VolumeLabel
+                                                            TargetRootDirectoryInfo=@driveInfo.RootDirectory
+                                                            OnClickCallback="@DriveNodeCallback" />
+                                            </li>
+                                        }
+                                    </ul>
                                 }
-                            </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 140px); overflow: auto;">
+                        @if (string.IsNullOrEmpty(selectedPath))
+                        {
+                            <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="MoveTo" />
                         }
-                    </li>
-                </ul>
+                        else
+                        {
+                            <FileDetailViewTable SelectedDirectoryPath="@selectedPath"
+                                                 IncludedDirectoryInfos="@directoryInfos"
+                                                 IncludedFileInfos="@fileInfos"
+                                                 OnSelectedDirectory="MoveTo" />
+                        }
+                    </div>
+                </div>
+                <div class="row px-0 py-0 align-items-center border" style="height: 40px">
+                    <div class="col-12">
+                        <small>@itemCount items</small>
+                    </div>
+                </div>
             </div>
-            <div class="col-9 px-1 py-0 border" style="height: calc(100vh - 140px); overflow: auto;">
-                @if (string.IsNullOrEmpty(selectedPath))
-                {
-                    <DriveDetailView DriveInfos="@driveInfos" SelectedDirectoryCallback="MoveTo" />
-                }
-                else
-                {
-                    <FileDetailViewTable SelectedDirectoryPath="@selectedPath"
-                                         IncludedDirectoryInfos="@directoryInfos"
-                                         IncludedFileInfos="@fileInfos"
-                                         OnSelectedDirectory="MoveTo"
-                                         />
-                }
-            </div>
-        </div>
-        <div class="row px-0 py-0 align-items-center border" style="height: 40px">
-            <div class="col-12">
-                <small>@itemCount items</small>
-            </div>
-        </div>
-    </div>
-}
+        }
 
     </Authorized>
     <NotAuthorized>
@@ -340,5 +341,10 @@ else
         itemCount += fileInfos == null ? 0 : fileInfos.Length;
 
         await InvokeAsync(() => { this.StateHasChanged(); });
+    }
+
+    private void Logout()
+    {
+        Navigation.NavigateTo("/logout", true);
     }
 }
