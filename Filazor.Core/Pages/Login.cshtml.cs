@@ -45,6 +45,7 @@ namespace Filazor.Core.Pages
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = true,
+                ExpiresUtc = DateTime.UtcNow.AddMinutes(30),
                 RedirectUri = "/main"
             };
 
