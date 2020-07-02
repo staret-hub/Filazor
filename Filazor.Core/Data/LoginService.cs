@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Filazor.Core.Shared;
 
 namespace Filazor.Core.Data
 {
@@ -20,6 +24,15 @@ namespace Filazor.Core.Data
                 
                 return false;
             }
+
+            //using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
+            //{
+            //    string s;
+            //    while ((s = sr.ReadLine()) != null)
+            //    {
+            //        Console.WriteLine(s);
+            //    }
+            //}
 
             byte[] salt = Convert.FromBase64String("gq11Pc3RZsEnd2ceMJMisw=="); // MakeSalt(password);
             //string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8));
