@@ -25,20 +25,31 @@ namespace Filazor.Core.Data
                 return false;
             }
 
-            //using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
-            //{
-            //    string s;
-            //    while ((s = sr.ReadLine()) != null)
-            //    {
-            //        Console.WriteLine(s);
-            //    }
-            //}
+            string jsonUserInfos = null;
+            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
+            {
+                jsonUserInfos = sr.ReadToEnd();
+                Console.WriteLine(jsonUserInfos);
+            }
 
-            byte[] salt = Convert.FromBase64String("gq11Pc3RZsEnd2ceMJMisw=="); // MakeSalt(password);
-            //string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8));
-            string encrypedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8));
+            byte[] salt;
+            string encrypedPassword;
+            using (JsonDocument jDoc = JsonDocument.Parse(jsonUserInfos))
+            {
+                foreach (JsonElement element in jDoc.RootElement.EnumerateArray())
+                {
+                    if (element.GetProperty("id").GetString() == id)
+                    {
+                        salt = element.GetProperty("salt").GetBytesFromBase64();
+                        encrypedPassword = element.GetProperty("password").GetString();
 
-            return encrypedPassword == "2+RiUCswdFn6nqsMnSvlhVzdoy11PBj/GKorobJXtDo=";
+                        if (encrypedPassword == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static byte[] MakeSalt(string password)
