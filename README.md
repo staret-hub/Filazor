@@ -12,7 +12,7 @@ Icons
 Features
 - Explore File System
 - File Download / Upload
-- Login (Default ID/Password: admin/Admin1234!)
+- Login (Default ID/Password: Admin/Admin1234!)
 
 ScreenShot
 ![ScreenShot](./Images/ScreenShot-062320.jpg)
