@@ -3,9 +3,11 @@
 @using System.IO
 @using Filazor.Core.Data
 @using Filazor.Core.Pages.Controls
+@using Filazor.Core.Controller
 
 @inject FileSystemService FSService
 @inject NavigationManager Navigation
+@inject HttpClient Http
 
 <AuthorizeView>
     <Authorized>
@@ -151,6 +153,7 @@
                     <i class="material-icons px-2 align-self-center" style="font-size: 24px; color: dimgrey;">
                         account_circle
                     </i>
+                    @CurrentUser.UserName
                     <div class="col px-1">
                         <p class="text-center mb-0 py-1" style="color: dimgray"><strong>File Explorer</strong></p>
                     </div>
@@ -245,11 +248,19 @@
     private FSTreeNode lastSelectedNode;    // for Directory Node Default Style
     private int itemCount;
 
+    private UserModel CurrentUser = new UserModel();
+
 
     protected override async Task OnInitializedAsync()
     {
         hostName = await FSService.GetHostName();
         driveInfos = await FSService.GetDriveListAsync();
+
+        var url = Navigation.ToAbsoluteUri("/api/User/GetUser");
+        var result = await Http.GetJsonAsync<UserModel>(url.ToString());
+
+        CurrentUser.UserName = result.UserName;
+        CurrentUser.IsAuthenticated = result.IsAuthenticated;
     }
 
     protected override void OnAfterRender(bool firstRender)
