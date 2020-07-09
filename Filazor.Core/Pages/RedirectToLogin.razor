@@ -4,6 +4,13 @@
 @code {        
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/loginControl");
+        try
+        {
+            NavigationManager.NavigateTo("/loginControl");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 }

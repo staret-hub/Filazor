@@ -17,9 +17,10 @@ namespace Filazor.Core.Controller
             // Instantiate a UserModel
             var userModel = new UserModel
             {
-                UserName = "",
+                UserName = "Unknown",
                 IsAuthenticated = false
             };
+
             // Detect if the user is authenticated
             if (User.Identity.IsAuthenticated)
             {
@@ -29,6 +30,7 @@ namespace Filazor.Core.Controller
                 userModel.IsAuthenticated =
                     User.Identity.IsAuthenticated;
             };
+
             return userModel;
         }
     }
