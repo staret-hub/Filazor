@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,10 +26,8 @@ namespace Filazor.Core.Controller
             if (User.Identity.IsAuthenticated)
             {
                 // Set the username of the authenticated user
-                userModel.UserName =
-                    User.Identity.Name;
-                userModel.IsAuthenticated =
-                    User.Identity.IsAuthenticated;
+                userModel.UserName = $"{User.Identity.Name}({User.Claims.First(c => c.Type == ClaimTypes.Role).Value})";
+                userModel.IsAuthenticated = User.Identity.IsAuthenticated;
             };
 
             return userModel;
