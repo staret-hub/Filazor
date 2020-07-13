@@ -150,17 +150,23 @@
         else
         {
             <div class="container-fluid h-100 d-flex flex-column">
-                <div class="row border">
-                    <i class="material-icons px-2 align-self-center" style="font-size: 24px; color: dimgrey;">
-                        account_circle
-                    </i>
-                    <p class="align-self-center mb-0">@CurrentUser.UserName</p>
+                <div class="row align-items-center border">
+                    <div class="col px-1">
+                        <i class="material-icons align-middle" style="font-size: 24px; color: dimgrey;">
+                            account_circle
+                        </i>
+                        <span class="align-middle">@CurrentUser.UserName</span>
+                    </div>
+
                     <div class="col px-1">
                         <p class="text-center mb-0 py-1" style="color: dimgray"><strong>File Explorer</strong></p>
                     </div>
-                    <button type="button" class="close px-2" aria-label="Logout" title="Logout" @onclick="Logout">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+
+                    <div class="col align-items-center px-1">
+                        <button type="button" class="close mx-1" aria-label="Logout" title="Logout" @onclick="Logout">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="row align-items-center border">
