@@ -152,10 +152,12 @@
             <div class="container-fluid h-100 d-flex flex-column">
                 <div class="row align-items-center border">
                     <div class="col px-1">
-                        <i class="material-icons align-middle" style="font-size: 24px; color: dimgrey;">
-                            account_circle
-                        </i>
-                        <span class="align-middle">@CurrentUser.UserName</span>
+                        <span @onclick="ShowUserInfo">
+                            <i class="material-icons align-middle" style="font-size: 24px; color: dimgrey;">
+                                account_circle
+                            </i>
+                            <span class="align-middle"><small>@CurrentUser.UserName</small></span>
+                        </span>
                     </div>
 
                     <div class="col px-1">
@@ -233,6 +235,7 @@
             </div>
         }
 
+        <UserInfoDialog Show="showUserInfoDialog" />
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -256,6 +259,7 @@
     private int itemCount;
 
     private UserModel CurrentUser = new UserModel();
+    private bool showUserInfoDialog = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -377,6 +381,11 @@
         itemCount += fileInfos == null ? 0 : fileInfos.Length;
 
         await InvokeAsync(() => { this.StateHasChanged(); });
+    }
+
+    private void ShowUserInfo()
+    {
+        
     }
 
     private void Logout()
