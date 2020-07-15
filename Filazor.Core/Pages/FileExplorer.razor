@@ -235,7 +235,8 @@
             </div>
         }
 
-        <UserInfoDialog Show="showUserInfoDialog" />
+        <UserInfoDialog Show="showUserInfoDialog" CurrentUser="@CurrentUser" UserInfoDialogResultReturned="CloseUserInfoDialog" />
+
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -273,10 +274,7 @@
             Http.DefaultRequestHeaders.Add("Cookie", ".AspNetCore.Cookies=" + authToken);
 
             var url = Navigation.ToAbsoluteUri("/api/User/GetUser");
-            var result = await Http.GetJsonAsync<UserModel>(url.ToString());
-
-            CurrentUser.UserName = result.UserName;
-            CurrentUser.IsAuthenticated = result.IsAuthenticated;
+            CurrentUser = await Http.GetJsonAsync<UserModel>(url.ToString());
         }
     }
 
@@ -385,7 +383,12 @@
 
     private void ShowUserInfo()
     {
-        
+        showUserInfoDialog = true;
+    }
+
+    private void CloseUserInfoDialog()
+    {
+        showUserInfoDialog = false;
     }
 
     private void Logout()

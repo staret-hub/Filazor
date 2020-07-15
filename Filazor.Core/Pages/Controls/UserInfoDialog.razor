@@ -1,17 +1,27 @@
-﻿<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay">
+﻿@using Filazor.Core.Controller
+
+
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">User Info</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="() => Show = false">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="OnDialogClosed">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                test
+                <div class="row">
+                    <div class="col">ID: @CurrentUser.UserName</div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col">Role: @CurrentUser.Role</div>
+                    <div class="col"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => Show = false">Confirm</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="OnDialogClosed">Confirm</button>
             </div>
         </div>
     </div>
@@ -44,5 +54,17 @@
                 modalDisplay = "none;";
             }
         }
+    }
+
+    [Parameter]
+    public UserModel CurrentUser { get; set; }
+
+    [Parameter]
+    public EventCallback<string> UserInfoDialogResultReturned { get; set; }
+
+
+    private Task OnDialogClosed()
+    {
+        return UserInfoDialogResultReturned.InvokeAsync(null);
     }
 }

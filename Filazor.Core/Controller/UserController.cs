@@ -26,8 +26,9 @@ namespace Filazor.Core.Controller
             if (User.Identity.IsAuthenticated)
             {
                 // Set the username of the authenticated user
-                userModel.UserName = $"{User.Identity.Name}({User.Claims.First(c => c.Type == ClaimTypes.Role).Value})";
+                userModel.UserName = User.Identity.Name;
                 userModel.IsAuthenticated = User.Identity.IsAuthenticated;
+                userModel.Role = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             };
 
             return userModel;
@@ -37,6 +38,9 @@ namespace Filazor.Core.Controller
     public class UserModel
     {
         public string UserName { get; set; }
+
         public bool IsAuthenticated { get; set; }
+
+        public string Role { get; set; }
     }
 }
