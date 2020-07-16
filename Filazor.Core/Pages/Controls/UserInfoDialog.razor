@@ -19,6 +19,20 @@
                     <div class="col">Role: @CurrentUser.Role</div>
                     <div class="col"></div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="inputPassword6">Password</label>
+                                <input type="password" id="inputPassword6" class="form-control mx-sm-3" aria-describedby="passwordHelpInline">
+                                @*<small id="passwordHelpInline" class="text-muted">
+                                    Must be 8-20 characters long.
+                                </small>*@
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="OnDialogClosed">Confirm</button>
