@@ -11,28 +11,40 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col">ID: @CurrentUser.UserName</div>
-                    <div class="col"></div>
-                </div>
-                <div class="row">
-                    <div class="col">Role: @CurrentUser.Role</div>
-                    <div class="col"></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <label for="inputPassword6">Password</label>
-                                <input type="password" id="inputPassword6" class="form-control mx-sm-3" aria-describedby="passwordHelpInline">
-                                @*<small id="passwordHelpInline" class="text-muted">
-                                    Must be 8-20 characters long.
-                                </small>*@
+                <form>
+                    <small>
+                        <div class="form-group row">
+                            <label for="textUserID" class="col-sm-5 col-form-label">User ID:</label>
+                            <div class="col-sm-7">
+                                <input type="text" readonly class="form-control-plaintext" id="textUserID" placeholder="User ID" value="@CurrentUser.UserName" />
                             </div>
-                        </form>
-                    </div>
-                    <div class="col"></div>
-                </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="textRole" class="col-sm-5 col-form-label">Role:</label>
+                            <div class="col-sm-7">
+                                <input type="text" readonly class="form-control-plaintext" id="textRole" placeholder="Role" value="@CurrentUser.Role" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputCurrentPassword" class="col-sm-5 col-form-label">Current Password:</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control-sm" id="inputCurrentPassword" placeholder="Current Password" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputNewPassword" class="col-sm-5 col-form-label">New Password:</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control-sm" id="inputNewPassword" placeholder="New Password" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputConfirmPassword" class="col-sm-5 col-form-label">Confirm New Password:</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control-sm" id="inputConfirmPassword" placeholder="Confirm New Password" />
+                            </div>
+                        </div>
+                    </small>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="OnDialogClosed">Confirm</button>
