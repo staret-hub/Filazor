@@ -1,4 +1,5 @@
 ﻿@using Filazor.Core.Controller
+@using Filazor.Core.Data
 
 
 <div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay">
@@ -24,44 +25,29 @@
                     </div>
                 </div>
 
-                @*<form>
-            <small>
-                <div class="form-group row">
-                    <label for="textUserID" class="col-sm-5 col-form-label">User ID:</label>
-                    <div class="col-sm-7 m-0 p-0">
-                        <input type="text" readonly class="form-control-plaintext" id="textUserID" placeholder="User ID" value="@CurrentUser.UserName" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="textRole" class="col-sm-5 col-form-label">Role:</label>
-                    <div class="col-sm-7 m-0 p-0">
-                        <input type="text" readonly class="form-control-plaintext" id="textRole" placeholder="Role" value="@CurrentUser.Role" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputCurrentPassword" class="col-sm-5 col-form-label">Current Password:</label>
-                    <div class="col-sm-7 m-0 p-0">
-                        <input type="password" class="form-control-sm" id="inputCurrentPassword" placeholder="Current Password" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputNewPassword" class="col-sm-5 col-form-label">New Password:</label>
-                    <div class="col-sm-7 m-0 p-0">
-                        <input type="password" class="form-control-sm" id="inputNewPassword" placeholder="New Password" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputConfirmPassword" class="col-sm-5 col-form-label">Confirm New Password:</label>
-                    <div class="col-sm-5 m-0 p-0">
-                        <input type="password" class="form-control-sm" id="inputConfirmPassword" placeholder="Confirm New Password" />
+                <EditForm Model="@passwordModel">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-                     </div>
-                    <div class="col-sm-2 m-0 p-0">
-                        <button type="button" class="btn btn-primary btn-sm" @onclick="ChangePassword">Change</button>
+                    <div class="row align-items-center">
+                        <label for="inputCurrentPassword" class="col-sm-5 col-form-label"><small>Current Password:</small></label>
+                        <div class="col-sm-7 m-0 p-0">
+                            <InputText type="password" id="inputCurrentPassword" class="small" placeholder="Current Password" @bind-Value="@passwordModel.CurrentPassword" />
+                        </div>
                     </div>
-                </div>
-            </small>
-        </form>*@
+                    <div class="row align-items-center">
+                        <label for="inputNewPassword" class="col-sm-5 col-form-label"><small>New Password:</small></label>
+                        <div class="col-sm-7 m-0 p-0">
+                            <InputText type="password" id="inputNewPassword" class="small" placeholder="New Password" @bind-Value="@passwordModel.NewPassword" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <label for="inputConfirmNewPassword" class="col-sm-5 col-form-label"><small>Confirm New Password:</small></label>
+                        <div class="col-sm-7 m-0 p-0">
+                            <InputText type="password" id="inputConfirmNewPassword" class="small" placeholder="Confirm New Password" @bind-Value="@passwordModel.ConfirmNewPassword" />
+                        </div>
+                    </div>
+                </EditForm>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" @onclick="OnDialogClosed">OK</button>
@@ -79,6 +65,7 @@
     private string modalClass;
     private string modalDisplay = "none;";
     private bool show;
+    private PasswordModel passwordModel = new PasswordModel();
 
     [Parameter]
     public bool Show
