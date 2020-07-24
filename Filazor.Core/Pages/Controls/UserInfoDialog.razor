@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <EditForm Model="@passwordModel">
+                <EditForm Model="@passwordModel" OnValidSubmit="ChangePassword">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
@@ -45,6 +45,14 @@
                         <label for="inputConfirmNewPassword" class="col-sm-5 col-form-label"><small>Confirm New Password:</small></label>
                         <div class="col-sm-7 m-0 p-0">
                             <InputText type="password" id="inputConfirmNewPassword" class="small" placeholder="Confirm New Password" @bind-Value="@passwordModel.ConfirmNewPassword" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-sm-5">
+
+                        </div>
+                        <div class="col-sm-7 m-0 p-0">
+                            <button type="submit" class="btn btn-outline-primary btn-sm small">Change Password</button>
                         </div>
                     </div>
                 </EditForm>
