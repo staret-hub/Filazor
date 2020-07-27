@@ -27,7 +27,6 @@
 
                 <EditForm Model="@passwordModel" OnValidSubmit="ChangePassword">
                     <DataAnnotationsValidator />
-                    <ValidationSummary />
 
                     <div class="row align-items-center">
                         <label for="inputCurrentPassword" class="col-sm-5 col-form-label"><small>Current Password:</small></label>
@@ -35,19 +34,22 @@
                             <InputText type="password" id="inputCurrentPassword" class="small" placeholder="Current Password" @bind-Value="@passwordModel.CurrentPassword" />
                         </div>
                     </div>
+                    <small><ValidationMessage For="(() => passwordModel.CurrentPassword)" /></small>
                     <div class="row align-items-center">
                         <label for="inputNewPassword" class="col-sm-5 col-form-label"><small>New Password:</small></label>
                         <div class="col-sm-7 m-0 p-0">
                             <InputText type="password" id="inputNewPassword" class="small" placeholder="New Password" @bind-Value="@passwordModel.NewPassword" />
                         </div>
                     </div>
+                    <small><ValidationMessage For="(() => passwordModel.NewPassword)" /></small>
                     <div class="row align-items-center">
                         <label for="inputConfirmNewPassword" class="col-sm-5 col-form-label"><small>Confirm New Password:</small></label>
                         <div class="col-sm-7 m-0 p-0">
                             <InputText type="password" id="inputConfirmNewPassword" class="small" placeholder="Confirm New Password" @bind-Value="@passwordModel.ConfirmNewPassword" />
                         </div>
                     </div>
-                    <div class="row align-items-center">
+                    <small><ValidationMessage For="(() => passwordModel.ConfirmNewPassword)" /></small>
+                    <div class="row align-items-center mt-2">
                         <div class="col-sm-5">
 
                         </div>
@@ -108,6 +110,6 @@
 
     private void ChangePassword()
     {
-        Console.WriteLine("Change Password!");
+        
     }
 }

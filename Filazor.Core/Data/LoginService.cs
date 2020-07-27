@@ -13,7 +13,6 @@ using Filazor.Core.Shared;
 
 namespace Filazor.Core.Data
 {
-    [AllowAnonymous]
     public class LoginService
     {
         public static bool Login(string id, string password)
