@@ -24,12 +24,7 @@ namespace Filazor.Core.Data
                 return false;
             }
 
-            string jsonUserInfos = null;
-            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
-            {
-                jsonUserInfos = sr.ReadToEnd();
-                Console.WriteLine(jsonUserInfos);
-            }
+            string jsonUserInfos = GetUserInfoJsonString();
 
             byte[] salt;
             string encrypedPassword;
@@ -49,6 +44,26 @@ namespace Filazor.Core.Data
             }
 
             return false;
+        }
+
+        public static string ChangePassword(string userID, PasswordModel passwordModel)
+        {
+            Console.WriteLine("Sorry, This feature will be updated.");
+
+
+            return null;
+        }
+
+        private static string GetUserInfoJsonString()
+        {
+            string result;
+            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
+            {
+                result = sr.ReadToEnd();
+                Console.WriteLine(result);
+            }
+
+            return result;
         }
 
         private static byte[] MakeSalt(string password)

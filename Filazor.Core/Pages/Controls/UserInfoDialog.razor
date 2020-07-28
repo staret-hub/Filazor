@@ -103,6 +103,7 @@
     public EventCallback<string> UserInfoDialogResultReturned { get; set; }
 
 
+
     private Task OnDialogClosed()
     {
         return UserInfoDialogResultReturned.InvokeAsync(null);
@@ -110,6 +111,7 @@
 
     private void ChangePassword()
     {
+        string result = LoginService.ChangePassword(CurrentUser.UserName, passwordModel);
         
     }
 }
