@@ -1,15 +1,9 @@
-﻿using System;
+﻿using Filazor.Core.Shared;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Filazor.Core.Shared;
 
 namespace Filazor.Core.Data
 {
@@ -20,10 +14,41 @@ namespace Filazor.Core.Data
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
             {
                 Console.WriteLine("Login failed : {0}", "Input was wrong.");
-                
+
                 return false;
             }
 
+            string result = CheckPassword(id, password);
+            if (string.IsNullOrEmpty(result))
+            {
+                return true;
+            }
+            Console.WriteLine("Login failed : {0}", result);
+
+            return false;
+        }
+
+        public static string ChangePassword(string userID, PasswordModel passwordModel)
+        {
+            string result = CheckPassword(userID, passwordModel.CurrentPassword);
+
+            return result;
+        }
+
+        private static string GetUserInfoJsonString()
+        {
+            string result;
+            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
+            {
+                result = sr.ReadToEnd();
+                Console.WriteLine(result);
+            }
+
+            return result;
+        }
+
+        private static string CheckPassword(string id, string password)
+        {
             string jsonUserInfos = GetUserInfoJsonString();
 
             byte[] salt;
@@ -38,32 +63,18 @@ namespace Filazor.Core.Data
                         encrypedPassword = element.GetProperty("password").GetString();
 
                         if (encrypedPassword == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
-                            return true;
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return "Please, check your password.";
+                        }
                     }
                 }
+
+                return "Please, check your ID.";
             }
-
-            return false;
-        }
-
-        public static string ChangePassword(string userID, PasswordModel passwordModel)
-        {
-            Console.WriteLine("Sorry, This feature will be updated.");
-
-
-            return null;
-        }
-
-        private static string GetUserInfoJsonString()
-        {
-            string result;
-            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
-            {
-                result = sr.ReadToEnd();
-                Console.WriteLine(result);
-            }
-
-            return result;
         }
 
         private static byte[] MakeSalt(string password)
