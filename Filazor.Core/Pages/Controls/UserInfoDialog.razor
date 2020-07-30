@@ -111,7 +111,22 @@
 
     private void ChangePassword()
     {
-        string result = LoginService.ChangePassword(CurrentUser.UserName, passwordModel);
-        
+        var isValid = CheckValidate(passwordModel);
+
+        if (isValid)
+        {
+            string result = LoginService.ChangePassword(CurrentUser.UserName, passwordModel);
+        }
+        else
+        {
+            Console.WriteLine("Not matched new password and confirm new password.");
+        }
+    }
+
+    private bool CheckValidate(PasswordModel passwordModel)
+    {
+        var checksValid = passwordModel.NewPassword == passwordModel.ConfirmNewPassword;
+
+        return checksValid;
     }
 }

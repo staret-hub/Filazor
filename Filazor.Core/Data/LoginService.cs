@@ -30,7 +30,13 @@ namespace Filazor.Core.Data
 
         public static string ChangePassword(string userID, PasswordModel passwordModel)
         {
+            
+
             string result = CheckPassword(userID, passwordModel.CurrentPassword);
+            if (result == null)
+            {
+                
+            }
 
             return result;
         }
