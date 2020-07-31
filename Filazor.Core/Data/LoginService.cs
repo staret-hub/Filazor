@@ -30,12 +30,10 @@ namespace Filazor.Core.Data
 
         public static string ChangePassword(string userID, PasswordModel passwordModel)
         {
-            
-
             string result = CheckPassword(userID, passwordModel.CurrentPassword);
             if (result == null)
             {
-                
+                result = ChangePassword(userID, passwordModel);
             }
 
             return result;
@@ -51,6 +49,36 @@ namespace Filazor.Core.Data
             }
 
             return result;
+        }
+
+        private static string ChangePassword(string id, string password)
+        {
+            string jsonUserInfos = GetUserInfoJsonString();
+
+            byte[] salt;
+            string encrypedPassword;
+            using (JsonDocument jDoc = JsonDocument.Parse(jsonUserInfos))
+            {
+                foreach (JsonElement element in jDoc.RootElement.EnumerateArray())
+                {
+                    if (element.GetProperty("id").GetString() == id)
+                    {
+                        salt = element.GetProperty("salt").GetBytesFromBase64();
+                        encrypedPassword = element.GetProperty("password").GetString();
+
+                        if (encrypedPassword == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return "Please, check your password.";
+                        }
+                    }
+                }
+
+                return "Please, check your ID.";
+            }
         }
 
         private static string CheckPassword(string id, string password)

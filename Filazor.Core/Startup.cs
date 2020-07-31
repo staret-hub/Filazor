@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 
 using Filazor.Core.Data;
+using System.IO;
+using Filazor.Core.Shared;
+using System;
 
 namespace Filazor.Core
 {
@@ -83,6 +86,20 @@ namespace Filazor.Core
                 endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapControllers();
             });
+
+            PrepareToInit();
+        }
+
+        private void PrepareToInit()
+        {
+            if (File.Exists(Common.USER_FILE_PATH) == false)
+            {
+                Console.WriteLine("It will be make default UserInfo");
+            }
+            else
+            {
+                Console.WriteLine("USER_FILE [OK]");
+            }
         }
     }
 }
