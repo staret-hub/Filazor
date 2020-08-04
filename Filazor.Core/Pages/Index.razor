@@ -5,7 +5,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Navigation.NavigateTo("main");
+
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Navigation.NavigateTo("main");
+
+        base.OnAfterRender(firstRender);
+    }
 }
