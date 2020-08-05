@@ -12,5 +12,13 @@ namespace Filazor.Core.Data
         public string password { get; set; }
 
         public string salt { get; set; }
+
+        public UserInfo()
+        {
+            // Default User and password
+            id = "Admin";
+            password = "2+RiUCswdFn6nqsMnSvlhVzdoy11PBj/GKorobJXtDo=";
+            salt = "gq11Pc3RZsEnd2ceMJMisw==";
+        }
     }
 }

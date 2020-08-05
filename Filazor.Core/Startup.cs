@@ -8,10 +8,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 using Filazor.Core.Data;
 using System.IO;
 using Filazor.Core.Shared;
 using System;
+using System.Collections.Generic;
 
 namespace Filazor.Core
 {
@@ -92,13 +96,20 @@ namespace Filazor.Core
 
         private void PrepareToInit()
         {
-            if (File.Exists(Common.USER_FILE_PATH) == false)
+            if (File.Exists(Common.USER_FILE_PATH))
             {
-                Console.WriteLine("It will be make default UserInfo");
+                Common.DebugPrint("USER_FILE [OK]");
             }
             else
             {
-                Console.WriteLine("USER_FILE [OK]");
+                List<UserInfo> list = new List<UserInfo>();
+                UserInfo userInfo = new UserInfo();
+                list.Add(userInfo);
+                string jsonString = JsonSerializer.Serialize(list);
+
+                File.WriteAllText(Common.USER_FILE_PATH, jsonString);
+
+                Common.DebugPrint("Created User.json");
             }
         }
     }
