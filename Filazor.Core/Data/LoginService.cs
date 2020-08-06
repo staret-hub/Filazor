@@ -1,6 +1,7 @@
 ﻿using Filazor.Core.Shared;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -33,7 +34,23 @@ namespace Filazor.Core.Data
             string result = CheckPassword(userID, passwordModel.CurrentPassword);
             if (result == null)
             {
-                result = ChangePassword(userID, passwordModel);
+                result = ChangePassword(userID, passwordModel.NewPassword);
+            }
+
+            return result;
+        }
+
+        private static byte[] GetUserInfoJsonUtf8Bytes()
+        {
+            byte[] result = null;
+
+            try
+            {
+                result = File.ReadAllBytes(Common.USER_FILE_PATH);
+            }
+            catch (Exception e)
+            {
+                Common.DebugPrint(e.Message);
             }
 
             return result;
@@ -41,11 +58,16 @@ namespace Filazor.Core.Data
 
         private static string GetUserInfoJsonString()
         {
-            string result;
-            using (StreamReader sr = File.OpenText(Common.USER_FILE_PATH))
+            string result = null;
+
+            try
             {
-                result = sr.ReadToEnd();
-                Console.WriteLine(result);
+                result = File.ReadAllText(Common.USER_FILE_PATH);
+                Common.DebugPrint(result);
+            }
+            catch (Exception e)
+            {
+                Common.DebugPrint(e.Message);
             }
 
             return result;
@@ -83,32 +105,27 @@ namespace Filazor.Core.Data
 
         private static string CheckPassword(string id, string password)
         {
-            string jsonUserInfos = GetUserInfoJsonString();
+            byte[] jsonUtf8Bytes = GetUserInfoJsonUtf8Bytes();
 
-            byte[] salt;
-            string encrypedPassword;
-            using (JsonDocument jDoc = JsonDocument.Parse(jsonUserInfos))
+            var readOnlySpan = new ReadOnlySpan<byte>(jsonUtf8Bytes);
+            List<UserInfo> userInfoList = JsonSerializer.Deserialize<List<UserInfo>>(readOnlySpan);
+
+            foreach (UserInfo userInfo in userInfoList)
             {
-                foreach (JsonElement element in jDoc.RootElement.EnumerateArray())
+                if (userInfo.id == id)
                 {
-                    if (element.GetProperty("id").GetString() == id)
+                    if (userInfo.password == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, Convert.FromBase64String(userInfo.salt), KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
                     {
-                        salt = element.GetProperty("salt").GetBytesFromBase64();
-                        encrypedPassword = element.GetProperty("password").GetString();
-
-                        if (encrypedPassword == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return "Please, check your password.";
-                        }
+                        return null;
+                    }
+                    else
+                    {
+                        return "Please, check your password.";
                     }
                 }
-
-                return "Please, check your ID.";
             }
+
+            return "Please, check your ID.";
         }
 
         private static byte[] MakeSalt(string password)

@@ -105,11 +105,18 @@ namespace Filazor.Core
                 List<UserInfo> list = new List<UserInfo>();
                 UserInfo userInfo = new UserInfo();
                 list.Add(userInfo);
-                string jsonString = JsonSerializer.Serialize(list);
 
-                File.WriteAllText(Common.USER_FILE_PATH, jsonString);
+                byte[] jsonUtf8bytes = JsonSerializer.SerializeToUtf8Bytes(list, new JsonSerializerOptions() { WriteIndented = true } );
 
-                Common.DebugPrint("Created User.json");
+                try
+                {
+                    File.WriteAllBytes(Common.USER_FILE_PATH, jsonUtf8bytes);
+                    Common.DebugPrint("Created User.json file.");
+                }
+                catch (Exception e)
+                {
+                    Common.DebugPrint(e.Message);
+                }
             }
         }
     }

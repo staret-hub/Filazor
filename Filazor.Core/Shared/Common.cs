@@ -8,6 +8,9 @@ namespace Filazor.Core.Shared
 {
     public class Common
     {
+        /// <summary>
+        /// User.json File
+        /// </summary>
         public static string USER_FILE_PATH = "./Data/User.json";
 
         public static void DebugPrint(string message)
