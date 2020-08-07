@@ -59,6 +59,12 @@
                     </div>
                 </EditForm>
             </div>
+            @if (changedPasswordResult != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @changedPasswordResult
+                </div>
+            }
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" @onclick="OnDialogClosed">OK</button>
             </div>
@@ -76,6 +82,7 @@
     private string modalDisplay = "none;";
     private bool show;
     private PasswordModel passwordModel = new PasswordModel();
+    private string changedPasswordResult = null;
 
     [Parameter]
     public bool Show
@@ -115,7 +122,7 @@
 
         if (isValid)
         {
-            string result = LoginService.ChangePassword(CurrentUser.UserName, passwordModel);
+            changedPasswordResult = LoginService.ChangePassword(CurrentUser.UserName, passwordModel);
         }
         else
         {

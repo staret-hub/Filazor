@@ -31,29 +31,61 @@ namespace Filazor.Core.Data
 
         public static string ChangePassword(string userID, PasswordModel passwordModel)
         {
-            string result = CheckPassword(userID, passwordModel.CurrentPassword);
-            if (result == null)
+            byte[] jsonUtf8Bytes = GetUserInfoJsonUtf8Bytes();
+            var readOnlySpan = new ReadOnlySpan<byte>(jsonUtf8Bytes);
+            List<UserInfo> userInfoList = JsonSerializer.Deserialize<List<UserInfo>>(readOnlySpan);
+            foreach (var userInfo in userInfoList)
             {
-                result = ChangePassword(userID, passwordModel.NewPassword);
+                if (userInfo.id == userID)
+                {
+                    if (userInfo.password != EncryptedBase64String(passwordModel.CurrentPassword, Convert.FromBase64String(userInfo.salt)))
+                    {
+                        return "Please, check your password.";
+                    }
+
+                    byte[] salt = MakeSalt(passwordModel.NewPassword);
+                    userInfo.password = EncryptedBase64String(passwordModel.NewPassword, salt);
+                    userInfo.salt = Convert.ToBase64String(salt);
+
+                    byte[] jsonUtf8bytes = UserInfo.SerializeToUtf8Bytes(userInfoList);
+                    UserInfo.WriteFile(jsonUtf8bytes);
+
+                    return "Password changed successfully!";
+                }
             }
 
-            return result;
+            return "Please, check your ID.";
         }
 
-        private static byte[] GetUserInfoJsonUtf8Bytes()
+        private static string CheckPassword(string id, string password)
         {
-            byte[] result = null;
+            byte[] jsonUtf8Bytes = GetUserInfoJsonUtf8Bytes();
 
-            try
+            var readOnlySpan = new ReadOnlySpan<byte>(jsonUtf8Bytes);
+            List<UserInfo> userInfoList = JsonSerializer.Deserialize<List<UserInfo>>(readOnlySpan);
+
+            foreach (UserInfo userInfo in userInfoList)
             {
-                result = File.ReadAllBytes(Common.USER_FILE_PATH);
-            }
-            catch (Exception e)
-            {
-                Common.DebugPrint(e.Message);
+                if (userInfo.id == id)
+                {
+                    if (userInfo.password == EncryptedBase64String(password, Convert.FromBase64String(userInfo.salt)))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return "Please, check your password.";
+                    }
+                }
             }
 
-            return result;
+            return "Please, check your ID.";
+        }
+
+        private static string EncryptedBase64String(string password, byte[] salt)
+        {
+            byte[] encryptedPassword = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8);
+            return Convert.ToBase64String(encryptedPassword);
         }
 
         private static string GetUserInfoJsonString()
@@ -73,59 +105,20 @@ namespace Filazor.Core.Data
             return result;
         }
 
-        private static string ChangePassword(string id, string password)
+        private static byte[] GetUserInfoJsonUtf8Bytes()
         {
-            string jsonUserInfos = GetUserInfoJsonString();
+            byte[] result = null;
 
-            byte[] salt;
-            string encrypedPassword;
-            using (JsonDocument jDoc = JsonDocument.Parse(jsonUserInfos))
+            try
             {
-                foreach (JsonElement element in jDoc.RootElement.EnumerateArray())
-                {
-                    if (element.GetProperty("id").GetString() == id)
-                    {
-                        salt = element.GetProperty("salt").GetBytesFromBase64();
-                        encrypedPassword = element.GetProperty("password").GetString();
-
-                        if (encrypedPassword == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return "Please, check your password.";
-                        }
-                    }
-                }
-
-                return "Please, check your ID.";
+                result = File.ReadAllBytes(Common.USER_FILE_PATH);
             }
-        }
-
-        private static string CheckPassword(string id, string password)
-        {
-            byte[] jsonUtf8Bytes = GetUserInfoJsonUtf8Bytes();
-
-            var readOnlySpan = new ReadOnlySpan<byte>(jsonUtf8Bytes);
-            List<UserInfo> userInfoList = JsonSerializer.Deserialize<List<UserInfo>>(readOnlySpan);
-
-            foreach (UserInfo userInfo in userInfoList)
+            catch (Exception e)
             {
-                if (userInfo.id == id)
-                {
-                    if (userInfo.password == Convert.ToBase64String(KeyDerivation.Pbkdf2(password, Convert.FromBase64String(userInfo.salt), KeyDerivationPrf.HMACSHA1, 10000, 256 / 8)))
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        return "Please, check your password.";
-                    }
-                }
+                Common.DebugPrint(e.Message);
             }
 
-            return "Please, check your ID.";
+            return result;
         }
 
         private static byte[] MakeSalt(string password)

@@ -106,17 +106,8 @@ namespace Filazor.Core
                 UserInfo userInfo = new UserInfo();
                 list.Add(userInfo);
 
-                byte[] jsonUtf8bytes = JsonSerializer.SerializeToUtf8Bytes(list, new JsonSerializerOptions() { WriteIndented = true } );
-
-                try
-                {
-                    File.WriteAllBytes(Common.USER_FILE_PATH, jsonUtf8bytes);
-                    Common.DebugPrint("Created User.json file.");
-                }
-                catch (Exception e)
-                {
-                    Common.DebugPrint(e.Message);
-                }
+                byte[] jsonUtf8bytes = UserInfo.SerializeToUtf8Bytes(list);
+                UserInfo.WriteFile(jsonUtf8bytes);
             }
         }
     }
