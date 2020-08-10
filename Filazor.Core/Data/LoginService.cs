@@ -50,7 +50,7 @@ namespace Filazor.Core.Data
                     byte[] jsonUtf8bytes = UserInfo.SerializeToUtf8Bytes(userInfoList);
                     UserInfo.WriteFile(jsonUtf8bytes);
 
-                    return "Password changed successfully!";
+                    return null;
                 }
             }
 
