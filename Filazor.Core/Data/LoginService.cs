@@ -10,23 +10,22 @@ namespace Filazor.Core.Data
 {
     public class LoginService
     {
-        public static bool Login(string id, string password)
+        public static string Login(string id, string password)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
             {
                 Console.WriteLine("Login failed : {0}", "Input was wrong.");
 
-                return false;
+                return "Login failed: Please input your id and password.";
             }
 
             string result = CheckPassword(id, password);
             if (string.IsNullOrEmpty(result))
             {
-                return true;
+                return null;
             }
-            Console.WriteLine("Login failed : {0}", result);
 
-            return false;
+            return $"Login failed: { result }";
         }
 
         public static string ChangePassword(string userID, PasswordModel passwordModel)

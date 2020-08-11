@@ -30,10 +30,10 @@ namespace Filazor.Core.Pages
             }
             catch { }
 
-            if (LoginService.Login(paramUsername, paramPassword) == false)
+            string loginResult = LoginService.Login(paramUsername, paramPassword);
+            if (string.IsNullOrEmpty(loginResult) == false)
             {
-                Console.WriteLine("Login fail..");
-                return LocalRedirect("/loginControl");
+                return LocalRedirect($"/loginControl/{ loginResult }");
             }
 
             var claims = new List<Claim>
