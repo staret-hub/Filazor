@@ -2,6 +2,7 @@
 @page "/loginControl/{warningText}"
 
 @using System.Web
+@using Filazor.Core.Data
 
 
 <AuthorizeView>
@@ -14,26 +15,44 @@
                 <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
                     <div class="card card-signin my-5">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Sign In</h5>
-                            <form class="form-signin" method="get" action="/login">
-                                <div class="form-label-group">
-                                    <input type="text" id="inputID" name="paramUsername" class="form-control" placeholder="User ID" @bind="@userName" required autofocus>
-                                    <label for="inputID"></label>
-                                </div>
-
-                                <div class="form-label-group">
-                                    <input type="password" id="inputPassword" name="paramPassword" class="form-control" placeholder="Password" @bind="@password" required>
-                                    <label for="inputPassword"></label>
-                                </div>
-
-                                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Login</button>
-                                @if (string.IsNullOrEmpty(warningText) == false)
-                                {
-                                    <div class="alert alert-warning mt-3" role="alert">
-                                        @warningText
+                            <h5 class="card-title text-center">Sign in to Filazor</h5>
+                            @*<form class="form-signin" method="get" action="/login">
+                                    <div class="form-label-group">
+                                        <input type="text" id="inputID" name="paramUsername" class="form-control" placeholder="User ID" @bind="@userName" required autofocus>
+                                        <label for="inputID"></label>
                                     </div>
-                                }
-                            </form>
+
+                                    <div class="form-label-group">
+                                        <input type="password" id="inputPassword" name="paramPassword" class="form-control" placeholder="Password" @bind="@password" required>
+                                        <label for="inputPassword"></label>
+                                    </div>
+
+                                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Login</button>
+                                    @if (string.IsNullOrEmpty(warningText) == false)
+                                    {
+                                        <div class="alert alert-warning mt-3" role="alert">
+                                            @warningText
+                                        </div>
+                                    }
+                                </form>*@
+
+                            <EditForm Model="@loginModel" OnValidSubmit="TryToLogin" Context="formContext">
+                                <DataAnnotationsValidator />
+
+                                <div class="row align-items-center m-3">
+                                    <label for="inputID" class="small font-weight-bold">User ID</label>
+                                    <InputText type="text" id="inputID" class="form-control" @bind-Value="@loginModel.UserID" />
+                                </div>
+
+                                <div class="row align-items-center m-3">
+                                    <label for="inputPassword" class="small font-weight-bold">Password</label>
+                                    <InputText type="password" id="inputPassword" class="form-control" @bind-Value="@loginModel.Password" />
+                                </div>
+
+                                <div class="row align-items-center m-3">
+                                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                                </div>
+                            </EditForm>
                         </div>
                     </div>
                 </div>
@@ -45,8 +64,11 @@
 
 
 @code {
-    private string userName = null;
-    private string password = null;
+    //private string userName = null;
+    //private string password = null;
+
+    private UserLoginModel loginModel = new UserLoginModel();
+
 
     [Parameter]
     public string warningText { get; set; }
@@ -54,5 +76,10 @@
     private string encode(string param)
     {
         return HttpUtility.UrlEncode(param);
+    }
+
+    private void TryToLogin()
+    {
+        Console.WriteLine("Login");
     }
 }
