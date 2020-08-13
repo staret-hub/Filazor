@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
+
 using System.Threading.Tasks;
 using Filazor.Core.Data;
+
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -62,6 +64,58 @@ namespace Filazor.Core.Pages
             }
 
             return LocalRedirect(returnUrl);
+        }
+
+        public void OnPost()
+        {
+            Console.WriteLine("post");
+        }
+
+        public async Task<IActionResult> OnPostAsync(string text)
+        {
+            //string returnUrl = Url.Content("~/");
+            //try
+            //{
+            //    // Clear the existing external cookie
+            //    await HttpContext
+            //        .SignOutAsync(
+            //        CookieAuthenticationDefaults.AuthenticationScheme);
+            //}
+            //catch { }
+
+            //string loginResult = LoginService.Login(userLoginModel.UserID, userLoginModel.Password);
+            //if (string.IsNullOrEmpty(loginResult) == false)
+            //{
+            //    return LocalRedirect($"/loginControl/{ loginResult }");
+            //}
+
+            //var claims = new List<Claim>
+            //{
+            //    new Claim(ClaimTypes.Name, userLoginModel.UserID),
+            //    new Claim(ClaimTypes.Role, "Administrators"),
+            //};
+            //var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            //var authProperties = new AuthenticationProperties
+            //{
+            //    IsPersistent = true,
+            //    ExpiresUtc = DateTime.UtcNow.AddMinutes(30),
+            //    RedirectUri = "/main"
+            //};
+
+            //try
+            //{
+            //    await HttpContext.SignInAsync(
+            //    CookieAuthenticationDefaults.AuthenticationScheme,
+            //    new ClaimsPrincipal(claimsIdentity),
+            //    authProperties);
+            //}
+            //catch (Exception ex)
+            //{
+            //    string error = ex.Message;
+            //}
+
+            //return LocalRedirect(returnUrl);
+            return null;
         }
     }
 }
