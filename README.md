@@ -15,5 +15,6 @@ Features
 - Login (Default ID/Password: Admin/Admin1234!)
 
 ScreenShot
-![ScreenShot](./Images/ScreenShot-062320.jpg)
-![ScreenShot](./Images/ScreenShot-062520.jpg)
+![ScreenShot](./Images/ScreenShot-081420-1.jpg)
+![ScreenShot](./Images/ScreenShot-081420-2.jpg)
+![ScreenShot](./Images/ScreenShot-081420-3.jpg)
