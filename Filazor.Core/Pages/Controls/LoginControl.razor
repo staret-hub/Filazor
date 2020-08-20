@@ -26,7 +26,7 @@
                     <div class="card my-5">
                         <div class="card-body">
                             <h5 class="card-title text-center">Sign in to Filazor</h5>
-                            <form class="form-signin" method="get" action="/login">
+                            <form method="get" action="/login">
                                     <div class="form-label-group">
                                         <input type="text" id="inputID" name="paramUsername" class="form-control" placeholder="User ID" @bind="@userName" required autofocus>
                                         <label for="inputID"></label>
@@ -37,14 +37,14 @@
                                         <label for="inputPassword"></label>
                                     </div>
 
-                                    <button class="btn btn-sm btn-primary btn-block" type="submit">Sign in</button>
+                                    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
                                     @if (string.IsNullOrEmpty(warningText) == false)
                                     {
                                         <div class="alert alert-warning mt-3" role="alert">
                                             @warningText
                                         </div>
                                     }
-                                </form>
+                            </form>
 
                             @*<EditForm Model="@loginModel" OnValidSubmit="TryToLogin" class="small" Context="formContext">
                                 <DataAnnotationsValidator />
