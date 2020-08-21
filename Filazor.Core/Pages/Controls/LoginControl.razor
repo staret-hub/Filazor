@@ -90,50 +90,53 @@
 
     private async void TryToLogin()
     {
-        try
-        {
-            // Clear the existing external cookie
-            await httpContextAccessor.HttpContext
-                .SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-        }
-        catch (Exception e) {
-            Console.WriteLine(e.Message);
-        }
 
-        string loginResult = LoginService.Login(loginModel.UserID, loginModel.Password);
-        if (string.IsNullOrEmpty(loginResult) == false)
-        {
-            NavigationManager.NavigateTo($"/loginControl/{ loginResult }");
-            return;
-        }
 
-        var claims = new List<Claim>
-{
-            new Claim(ClaimTypes.Name, loginModel.UserID),
-            new Claim(ClaimTypes.Role, "Administrators"),
-        };
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var authProperties = new AuthenticationProperties
-        {
-            IsPersistent = true,
-            ExpiresUtc = DateTime.UtcNow.AddMinutes(30),
-            RedirectUri = "/main"
-        };
 
-        try
-        {
-            await httpContextAccessor.HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity),
-            authProperties);
-        }
-        catch (Exception ex)
-        {
-            string error = ex.Message;
-            Console.WriteLine(error);
-        }
+        //        try
+        //        {
+        //            // Clear the existing external cookie
+        //            await httpContextAccessor.HttpContext
+        //                .SignOutAsync(
+        //                CookieAuthenticationDefaults.AuthenticationScheme);
+        //        }
+        //        catch (Exception e) {
+        //            Console.WriteLine(e.Message);
+        //        }
 
-        NavigationManager.NavigateTo("/");
+        //        string loginResult = LoginService.Login(loginModel.UserID, loginModel.Password);
+        //        if (string.IsNullOrEmpty(loginResult) == false)
+        //        {
+        //            NavigationManager.NavigateTo($"/loginControl/{ loginResult }");
+        //            return;
+        //        }
+
+        //        var claims = new List<Claim>
+        //{
+        //            new Claim(ClaimTypes.Name, loginModel.UserID),
+        //            new Claim(ClaimTypes.Role, "Administrators"),
+        //        };
+        //        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //        var authProperties = new AuthenticationProperties
+        //        {
+        //            IsPersistent = true,
+        //            ExpiresUtc = DateTime.UtcNow.AddMinutes(30),
+        //            RedirectUri = "/main"
+        //        };
+
+        //        try
+        //        {
+        //            await httpContextAccessor.HttpContext.SignInAsync(
+        //            CookieAuthenticationDefaults.AuthenticationScheme,
+        //            new ClaimsPrincipal(claimsIdentity),
+        //            authProperties);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            string error = ex.Message;
+        //            Console.WriteLine(error);
+        //        }
+
+        //        NavigationManager.NavigateTo("/");
     }
 }
